@@ -7,35 +7,26 @@ import os
 
 login_url = "https://account.komoot.com/v1/signin"
 
-email_global = ""
-password_global = ""
 
-s = requests.Session()
-cookies = {}
-
-def auth(email, password) -> bool:
-	global email_global
-	global password_global
-
-	email_global = email
+def auth(email, password, client_id) -> bool:
+	#Login to komoot with username and password
+	s = requests.Session()
+	cookies = {}
 
 	if password == "!file":
 		with open("pwd.txt", "r") as f:
 			password = f.read().strip()
 
-	password_global = password
-
 	res = requests.get(login_url)
 	cookies = res.cookies.get_dict()
-
 
 	headers = {
 		"Content-Type": "application/json"
 	}
 
 	payload = json.dumps({
-		"email": email_global,
-		"password": password_global,
+		"email": email,
+		"password": password,
 		"reason": "null"
 	})
 
@@ -48,35 +39,40 @@ def auth(email, password) -> bool:
 	url = "https://account.komoot.com/actions/transfer?type=signin"
 	s.get(url)
 
-	return json.loads(r.text)["type"] == "logged_in"
+	#Check if login was successful
+	print(r.text)
+	if not json.loads(r.text)["type"] == "logged_in":
+		return False
 
-def check_auth(client_id):
+	#Check if provided clientid is correct
 	url = f"https://api.komoot.de/v007/users/{client_id}/tours/"
 
-	response = s.get(url, auth=HTTPBasicAuth(email_global, password_global))
-	return response.status_code == 200
+	response = s.get(url, auth=HTTPBasicAuth(email, password))
+	
+	if not response.status_code == 200:
+		return False
+	
+	#Everything is fine / return session and cookeis
+	return s, cookies
+
 
 
 """
 Gets GPX-data from ALL tours of a user
 PRIMARY FUNCTION
 """
-def get_all_tours_gpx(client_id):
-	tours_data = get_tours_data(client_id, recorded=True, planned=False)
-	gpx_files = []
-
-	for tour in tours_data:
-		gpx_files.append(get_tour_gpx(tour['id']))
+def get_all_tours_gpx(email, password, client_id):
+	#Authenticate
+	auth_resonse = auth(email, password, client_id)
+	if not auth_resonse:
+		return False
 	
-	return gpx_files
+	s, cookies = auth_resonse
 
-"""
-Gets all tour information from a user
-"""
-def get_tours_data(client_id, recorded=True, planned=False):
+	#Get tour information
 	url = f"https://api.komoot.de/v007/users/{client_id}/tours/"
 
-	response = s.get(url, auth=HTTPBasicAuth(email_global, password_global))
+	response = s.get(url, auth=HTTPBasicAuth(email, password))
 	if response.status_code != 200:
 		print("Something went wrong...")
 		print(response.text)
@@ -98,24 +94,24 @@ def get_tours_data(client_id, recorded=True, planned=False):
 	
 	print(return_tours)
 
-	return return_tours
+	#Get GPX data
+	gpx_files = []
+	for tour in return_tours:
+		tour_id = tour['id']
+		url = f"https://www.komoot.de/api/v007/tours/{tour_id}.gpx?hl=de"
 
-"""
-Gets the gpx data from a tour
-"""
-def get_tour_gpx(tour_id):
-	url = f"https://www.komoot.de/api/v007/tours/{tour_id}.gpx?hl=de"
+		response = s.get(url, cookies=cookies)
+		if response.status_code != 200:
+			print("Something went wrong...")
+			print(response.text)
+			print(response.status_code)
+			exit(1)
 
-	response = s.get(url, cookies=cookies)
-	if response.status_code != 200:
-		print("Something went wrong...")
-		print(response.text)
-		print(response.status_code)
-		exit(1)
+		data = response.text
+		gpx_files.append(get_tour_gpx(tour['id']))
+	
+	return gpx_files
 
-	data = response.text
-
-	return data
 
 
 if __name__ == "__main__":
