@@ -26,7 +26,13 @@ def gpx():
 
     gpx_data = get_data.get_all_tours_gpx(request.cookies.get('email'), request.cookies.get('password'), request.cookies.get('userid'))
     if not gpx_data:
-        return Response(status=401)
+        resp = make_response("Invalid credentials", 401)
+
+        resp.set_cookie('email', '', expires=0)
+        resp.set_cookie('password', '', expires=0)
+        resp.set_cookie('userid', '', expires=0)
+
+        return resp
 
     return Response(json.dumps(gpx_data), mimetype='application/json')
 
@@ -39,10 +45,10 @@ def login():
         userid = request.form['userid']
 
         #Check if credentials are correct
-        if not get_data.auth(email, password, userid):
-            return redirect(url_for('login'))
+        #if not get_data.auth(email, password, userid):
+        #    return redirect(url_for('login'))
         
-        #Everything is fine / set cookies
+        #Set cookies
         resp = make_response(redirect(url_for('home')))
 
         resp.set_cookie('email', email)

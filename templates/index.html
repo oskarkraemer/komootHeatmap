@@ -40,6 +40,9 @@
         
         if (request.status === 200) {
             tours = JSON.parse(request.responseText);
+        } else {
+            console.log('Error: ' + request.status);
+            window.location.replace("./login");
         }
 
         //for every route, load gpx file and add it to the map
