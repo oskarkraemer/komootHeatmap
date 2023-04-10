@@ -25,6 +25,8 @@ def gpx():
         return Response(status=401)
 
     gpx_data = get_data.get_all_tours_gpx(request.cookies.get('email'), request.cookies.get('password'), request.cookies.get('userid'))
+    if not gpx_data:
+        return Response(status=401)
 
     return Response(json.dumps(gpx_data), mimetype='application/json')
 
@@ -73,8 +75,8 @@ def is_logged_in():
     if 'userid' not in cookies or 'email' not in cookies or 'password' not in cookies:
         return False
     
-    if not get_data.auth(cookies.get('email'), cookies.get('password'), cookies.get('userid')):
-        return False
+    #if not get_data.auth(cookies.get('email'), cookies.get('password'), cookies.get('userid')):
+    #    return False
     
     return True
 
