@@ -46,13 +46,21 @@
         }
 
         //for every route, load gpx file and add it to the map
+        polyline_styling = {
+            color: 'red',
+            weight: 3,
+            opacity: 0.5,
+            lineCap: 'round'
+        };
+
         for (var i = 0; i < tours.length; i++) {
           var gpx = tours[i];
           new L.GPX(gpx, {
-              async: true,
-              gpx_options: {
-                  parseElements: ['track', 'route']
-              }
+                polyline_options: polyline_styling,
+                async: true,
+                gpx_options: {
+                    parseElements: ['track', 'route']
+                },
           }).on('loaded', function(e) {
               map.fitBounds(e.target.getBounds());
           }).addTo(map);

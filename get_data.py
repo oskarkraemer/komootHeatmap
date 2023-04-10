@@ -113,14 +113,3 @@ def get_all_tours_gpx(email, password, client_id, planned = False, recorded = Tr
 		gpx_files.append(data)
 	
 	return gpx_files
-
-
-
-if __name__ == "__main__":
-	auth("05262020@protonmail.com", "!file")
-	tours = get_tours(3036801734530)
-
-	for i, tour in enumerate(tours):
-		print(f"{i}: {tour['name']} - {tour['id']}")
-	
-	print(get_tour_gpx(tours[0]['id']))
