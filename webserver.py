@@ -3,11 +3,6 @@ import get_data
 import time
 import json
 
-#client_id = "3036801734530"
-
-#get_data.auth("05262020@protonmail.com", "!file")
-#tours = get_data.get_tours(client_id)
-
 app = Flask(__name__)
 
 
@@ -51,9 +46,12 @@ def login():
         #Set cookies
         resp = make_response(redirect(url_for('home')))
 
-        resp.set_cookie('email', email)
-        resp.set_cookie('password', password)
-        resp.set_cookie('userid', userid)
+        max_age = 60*60*24*30*6 #6 months
+        experation = time.time() + max_age
+
+        resp.set_cookie('email', email, max_age=max_age, expires=experation)
+        resp.set_cookie('password', password, max_age=max_age, expires=experation)
+        resp.set_cookie('userid', userid, max_age=max_age, expires=experation)
 
         return resp
     else:
