@@ -40,7 +40,6 @@ def auth(email, password, client_id) -> bool:
 	s.get(url)
 
 	#Check if login was successful
-	print(r.text)
 	if not json.loads(r.text)["type"] == "logged_in":
 		return False
 
@@ -61,7 +60,7 @@ def auth(email, password, client_id) -> bool:
 Gets GPX-data from ALL tours of a user
 PRIMARY FUNCTION
 """
-def get_all_tours_gpx(email, password, client_id):
+def get_all_tours_gpx(email, password, client_id, planned = False, recorded = True):
 	#Authenticate
 	auth_resonse = auth(email, password, client_id)
 	if not auth_resonse:
@@ -92,7 +91,6 @@ def get_all_tours_gpx(email, password, client_id):
 		elif tour['type'] == "tour_planned" and planned:
 			return_tours.append(tour)
 	
-	print(return_tours)
 
 	#Get GPX data
 	gpx_files = []
@@ -108,7 +106,7 @@ def get_all_tours_gpx(email, password, client_id):
 			exit(1)
 
 		data = response.text
-		gpx_files.append(get_tour_gpx(tour['id']))
+		gpx_files.append(data)
 	
 	return gpx_files
 
