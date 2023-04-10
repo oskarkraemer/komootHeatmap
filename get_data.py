@@ -61,6 +61,10 @@ Gets GPX-data from ALL tours of a user
 PRIMARY FUNCTION
 """
 def get_all_tours_gpx(email, password, client_id, planned = False, recorded = True):
+	#Check if both planned and recorded are false
+	if not planned and not recorded:
+		return False
+
 	#Authenticate
 	auth_resonse = auth(email, password, client_id)
 	if not auth_resonse:
