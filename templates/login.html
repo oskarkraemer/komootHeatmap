@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+        <title>Login Page</title>
+        <style>
+            body {
+            background-image: 
+                linear-gradient(
+                    rgba(0, 0, 0, 0.7), 
+                    rgba(0, 0, 0, 0.7)
+                ),
+                url("{{url_for('static', filename='img/bike_bg.jpg')}}");
+
+            background-size: cover;
+            background-position: 50% 0;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+
+            font-family: 'Roboto', sans-serif;
+            }
+
+            form {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 40px;
+            min-width: 300px;
+            border-radius: 10px;
+            text-align: center;
+            }
+
+            h1 {
+            font-size: 30px;
+            margin-bottom: 20px;
+            }
+
+            label, input {
+            display: block;
+            margin-bottom: 10px;
+            }
+
+            label {
+                font-weight: bold;
+            }
+
+            input {
+            padding: 5px;
+            width: 100%;
+            border-radius: 5px;
+            border: 2px solid #ccc;
+            }
+
+            input:focus {
+                border-color: #4f850d;
+                outline: none;
+            }
+
+            button {
+            padding: 10px 20px;
+            background-color: #4f850d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            }
+
+            button:hover {
+                background-color: #9cde4e;
+            }
+        </style>
+    </head>
+    <body> 
+        <form method="post">
+            <h1>Login with <span style="color:#4f850d">Komoot</span></h1>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="userid">User-ID</label>
+            <input type="text" id="userid" name="userid" required>
+
+            <button type="submit">Sign In</button>
+          </form>
+    </body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- Create Full Screen leaflet page -->
+<html>
+<head>
+    <title>Leaflet Full Screen</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
+    <style>
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .leaflet-marker-icon, .leaflet-marker-shadow {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="map" style="height: 100vh;"></div>
+
+    <script>
+        // create map
+        var map = L.map('map').setView([50.161, 7.749], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+          maxZoom: 18,
+        }).addTo(map);
+
+        //query the tours data
+        var tours = {};
+
+        var request = new XMLHttpRequest();
+        request.open('GET', './tours_data', false);
+        request.send(null);
+        
+        if (request.status === 200) {
+            tours = JSON.parse(request.responseText);
+        }
+
+        //for every route, load gpx file and add it to the map
+        for (var i = 0; i < tours.length; i++) {
+          var gpx = tours[i];
+          new L.GPX(gpx, {
+              async: true,
+              gpx_options: {
+                  parseElements: ['track', 'route']
+              }
+          }).on('loaded', function(e) {
+              map.fitBounds(e.target.getBounds());
+          }).addTo(map);
+        }
+      </script>
+      
+</body>
+</html>
