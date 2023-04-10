@@ -27,15 +27,9 @@ def home():
 
 @app.route('/tours_data')
 def gpx():
-    gpx_files = []
-    
-    tours = get_data.get_tours(session['userid'])
+    gpx_data = get_data.get_all_tours_gpx(session['userid'])
 
-    for tour in tours:
-        gpx_files.append(get_data.get_tour_gpx(tour['id']))
-
-    #reutrn array as json
-    return Response(json.dumps(gpx_files), mimetype='application/json')
+    return Response(json.dumps(gpx_data), mimetype='application/json')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -50,7 +44,7 @@ def login():
             return redirect(url_for('login'))
         
         #Userid is most likely wrong
-        tours = get_data.get_tours(userid)
+        tours = get_data.get_tours_data(userid)
         if tours == False:
             return redirect(url_for('login'))
         

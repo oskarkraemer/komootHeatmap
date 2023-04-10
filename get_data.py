@@ -56,7 +56,24 @@ def check_auth(client_id):
 	response = s.get(url, auth=HTTPBasicAuth(email_global, password_global))
 	return response.status_code == 200
 
-def get_tours(client_id, recorded=True, planned=False):
+
+"""
+Gets GPX-data from ALL tours of a user
+PRIMARY FUNCTION
+"""
+def get_all_tours_gpx(client_id):
+	tours_data = get_tours_data(client_id, recorded=True, planned=False)
+	gpx_files = []
+
+	for tour in tours_data:
+		gpx_files.append(get_tour_gpx(tour['id']))
+	
+	return gpx_files
+
+"""
+Gets all tour information from a user
+"""
+def get_tours_data(client_id, recorded=True, planned=False):
 	url = f"https://api.komoot.de/v007/users/{client_id}/tours/"
 
 	response = s.get(url, auth=HTTPBasicAuth(email_global, password_global))
@@ -78,9 +95,14 @@ def get_tours(client_id, recorded=True, planned=False):
 			return_tours.append(tour)
 		elif tour['type'] == "tour_planned" and planned:
 			return_tours.append(tour)
+	
+	print(return_tours)
 
 	return return_tours
 
+"""
+Gets the gpx data from a tour
+"""
 def get_tour_gpx(tour_id):
 	url = f"https://www.komoot.de/api/v007/tours/{tour_id}.gpx?hl=de"
 
