@@ -6,9 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
 
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
-    <script src="https://cdn.jsdelivr.net/npm/gpxparser@3.0.8/dist/GPXParser.min.js"></script>
-    <script src="https://hgoebl.github.io/Leaflet.MultiOptionsPolyline/Leaflet.MultiOptionsPolyline.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script> <!-- Leaflet -->
+    <script src="https://cdn.jsdelivr.net/npm/gpxparser@3.0.8/dist/GPXParser.min.js"></script> <!-- GPX Parser -->
+    <script src="https://hgoebl.github.io/Leaflet.MultiOptionsPolyline/Leaflet.MultiOptionsPolyline.js"></script> <!-- Leaflet-Polyline -->
+
+    
 
     <style>
         html, body, #map {
@@ -27,6 +29,63 @@
     <div id="map" style="height: 100vh;"></div>
 
     <script>
+        //Calculates the speed between two latLngs
+        function getSpeed(latLng, prevLatLng) {
+            var speed = latLng.distanceTo(prevLatLng); // meters
+            speed /= (latLng.time - prevLatLng.time) / 1000; // m/s
+            speed *= 3.6; // km/h
+            return speed;
+        }
+
+        //Gets upper average speed
+        function getSpeedMax(allRoutes) {
+            // get the average upper 1/16 of all speeds
+            var speeds = [];
+            for (var i = 0; i < allRoutes.length; i++) {
+                var points = allRoutes[i];
+                for (var j = 0; j < points.length - 1; j++) {
+                    var speed = getSpeed(points[j+1], points[j]);
+                    speeds.push(speed);
+                }
+            }
+
+            // sort the speeds ascending
+            speeds.sort(function(a, b) {
+                return a - b;
+            });
+
+            // get average
+            var sum = 0;
+            var count = 0;
+            for (var i = Math.floor(speeds.length * 0.94); i < speeds.length; i++) {
+                sum += speeds[i];
+                count++;
+            }
+
+            console.log(sum);
+            console.log(count);
+            console.log("fgg");
+
+            return Math.round(sum / count);
+        }
+
+        //Gets euqal distribution
+        function equalDistribution(start, end, midpoints) {
+            if (midpoints <= 0) {
+                return [];
+            }
+
+            const range = end - start;
+            const interval = range / (midpoints + 1);
+
+            const result = [];
+            for (let i = 1; i <= midpoints; i++) {
+                result.push(start + i * interval);
+            }
+
+            return result;
+        }
+
         // create map
         var map = L.map('map').setView([50.161, 7.749], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -49,6 +108,8 @@
         }
 
         //convert gpx files to leaflet latlngs
+        var allRoutes = [];
+
         for (var i = 0; i < tours.length; i++) {
             var parser = new gpxParser();
             parser.parse(tours[i]);
@@ -62,16 +123,22 @@
                 gpx_latlngs.push(latlng);
             }
 
+            allRoutes.push(gpx_latlngs);
+        }
+
+        var speedMax = getSpeedMax(allRoutes);
+        console.log(speedMax);
+
+        //create polylines
+        for (var i = 0; i < tours.length; i++) {
             //create multi options polyline
-            var polyline = L.multiOptionsPolyline(gpx_latlngs, {
+            var polyline = L.multiOptionsPolyline(allRoutes[i], {
                 multiOptions: {
                     optionIdxFn: function(latLng, prevLatLng) {
                         var i, speed,
-                            speedThresholds = [5, 10, 15, 20, 25, 30, 35, 40];
+                            speedThresholds = equalDistribution(0, speedMax, 9);
 
-                        speed = latLng.distanceTo(prevLatLng); // meters
-                        speed /= (latLng.time - prevLatLng.time) / 1000; // m/s
-                        speed *= 3.6; // km/h
+                        speed = getSpeed(latLng, prevLatLng);
 
                         for (i = 0; i < speedThresholds.length; ++i) {
                             if (speed <= speedThresholds[i]) {
@@ -91,8 +158,8 @@
                 opacity: 0.75,
                 smoothFactor: 1}
             ).addTo(map);
-
         }
+
       </script>
       
 </body>
