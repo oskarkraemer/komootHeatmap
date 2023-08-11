@@ -49,18 +49,18 @@
                 <hr>
 
                 <div class='my-legend'>
-                    <h3 class='custom-title'>Legend</h3>
+                    <h3 class='custom-title' id="legend-label">Legend</h3>
                     <div class='legend-scale'>
                       <ul class='legend-labels'>
-                        <li><span style='background:#0000FF;' id="lgd0"></span>0 - 20%</li>
-                        <li><span style='background:#0040FF;' id="lgd1"></span>40%</li>
-                        <li><span style='background:#0080FF;' id="lgd2"></span>60%</li>
-                        <li><span style='background:#00FFB0;' id="lgd3"></span>80%</li>
-                        <li><span style='background:#00E000;' id="lgd4"></span>100%</li>
-                        <li><span style='background:#80FF00;' id="lgd5"></span>100%</li>
-                        <li><span style='background:#FFFF00;' id="lgd6"></span>100%</li>
-                        <li><span style='background:#FFC000;' id="lgd7"></span>100%</li>
-                        <li><span style='background:#FF0000;' id="lgd8"></span>100%</li>
+                        <li>0<span style='background:#0000FF;'></span></li>
+                        <li>0<span style='background:#0040FF;'></span></li>
+                        <li>0<span style='background:#0080FF;'></span></li>
+                        <li>0<span style='background:#00FFB0;'></span></li>
+                        <li>0<span style='background:#00E000;'></span></li>
+                        <li>0<span style='background:#80FF00;'></span></li>
+                        <li>0<span style='background:#FFFF00;'></span></li>
+                        <li>0<span style='background:#FFC000;'></span></li>
+                        <li>0<span style='background:#FF0000;'></span></li>
                       </ul>
                     </div>
                 </div>
@@ -75,121 +75,6 @@
     <div id="map" style="height: 100vh;"></div>
 
     <script>
-        class Visualizer {
-            static options = {
-                    "heatmap": {
-                        optionIdxFn: function(latLng, prevLatLng) {
-                            return 0;
-                        },
-                        options: [
-                            {color: '#FF0000'}
-                        ]
-                    },
-                    "speed": {
-                        optionIdxFn: function(latLng, prevLatLng) {
-                            var i, speed,
-                                speedThresholds = equalDistribution(0, speedMax, 9);
-
-                            speed = getSpeed(latLng, prevLatLng);
-
-                            for (i = 0; i < speedThresholds.length; ++i) {
-                                if (speed <= speedThresholds[i]) {
-                                    return i;
-                                }
-                            }
-                            return speedThresholds.length;
-                        },
-                        options: [
-                            {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
-                            {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
-                            {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
-                        ]
-                    },
-
-                    "incline": {
-                        optionIdxFn: function(latLng, prevLatLng) {
-                            var i, incline,
-                                inclineThresholds = [0, 2, 4, 6, 8, 10, 12, 14, 16];
-
-                            incline = (latLng.alt - prevLatLng.alt) / latLng.distanceTo(prevLatLng) * 100;
-                            incline = Math.abs(incline);
-
-                            for (i = 0; i < inclineThresholds.length; ++i) {
-                                if (incline <= inclineThresholds[i]) {
-                                    return i;
-                                }
-                            }
-                            return inclineThresholds.length;
-                        },
-                        options: [
-                            {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
-                            {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
-                            {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
-                        ]
-                    },
-
-                    "elapsed": {
-                        optionIdxFn: function(latLng, prevLatLng, index, points) {
-                            var i, time,
-                                timeThresholds = equalDistribution(0, elapsedMax, 9);
-
-                            time = (latLng.time - points[0].time) / 1000; 
-
-                            for (i = 0; i < timeThresholds.length; ++i) {
-                                if (time <= timeThresholds[i]) {
-                                    return i;
-                                }
-                            }
-                            return timeThresholds.length - 1;
-                        },
-                        options: [
-                            {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
-                            {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
-                            {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
-                        ]
-                    }
-            }
-
-            static show_polylines(map, allRoutes, new_vizualisation) {
-                //update buttons
-                var buttons = document.getElementsByClassName("btn-group")[0].children;
-                for (var i = 0; i < buttons.length; i++) {
-                    if(buttons[i].id == new_vizualisation)
-                        buttons[i].disabled = true;
-                    else
-                        buttons[i].disabled = false;
-                }
-
-                //remove all polylines
-                for (var i = 0; i < polylines.length; i++) {
-                    polylines[i].remove(map);
-                }
-
-                polylines = [];
-
-                //create polylines
-                let opacity = 0.75;
-
-                if(new_vizualisation == "heatmap") {
-                    opacity = 0.5;
-                }
-
-                for (var i = 0; i < tours.length; i++) {
-                    //create multi options polyline
-                    var polyline = L.multiOptionsPolyline(allRoutes[i], {
-                        multiOptions: Visualizer.options[new_vizualisation],
-                        weight: 4,
-                        lineCap: 'round',
-                        opacity: opacity,
-                        smoothFactor: 1}
-                    ).addTo(map);
-
-                    //add polyline to array
-                    polylines.push(polyline);
-                }
-            }
-        }
-
         //Calculates the speed between two latLngs
         function getSpeed(latLng, prevLatLng) {
             var speed = latLng.distanceTo(prevLatLng); // meters
@@ -259,7 +144,7 @@
 
             const result = [];
             for (let i = 1; i <= midpoints; i++) {
-                result.push(start + i * interval);
+                result.push(Math.round(start + i * interval));
             }
 
             return result;
@@ -317,6 +202,145 @@
 
         var speedMax = getSpeedMax(allRoutes);
         var elapsedMax = getElapsedMax(allRoutes);
+
+        class Visualizer {
+            static options = {
+                    "heatmap": {
+                        unit: "",
+                        thresholds: [0],
+                        optionIdxFn: function(latLng, prevLatLng) {
+                            return 0;
+                        },
+                        options: [
+                            {color: '#FF0000'}
+                        ]
+                    },
+                    "speed": {
+                        unit: "km/h",
+                        thresholds: equalDistribution(0, speedMax, 9),
+                        optionIdxFn: function(latLng, prevLatLng) {
+                            var i, speed,
+                                speedThresholds = Visualizer.options["speed"].thresholds;
+
+                            speed = getSpeed(latLng, prevLatLng);
+
+                            for (i = 0; i < speedThresholds.length; ++i) {
+                                if (speed <= speedThresholds[i]) {
+                                    return i;
+                                }
+                            }
+                            return speedThresholds.length;
+                        },
+                        options: [
+                            {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
+                            {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
+                            {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
+                        ]
+                    },
+
+                    "incline": {
+                        unit: "%",
+                        thresholds: [0, 2, 4, 6, 8, 10, 12, 14, 16],
+                        optionIdxFn: function(latLng, prevLatLng) {
+                            var i, incline,
+                                inclineThresholds = Visualizer.options["incline"].thresholds;
+
+                            incline = (latLng.alt - prevLatLng.alt) / latLng.distanceTo(prevLatLng) * 100;
+                            incline = Math.abs(incline);
+
+                            for (i = 0; i < inclineThresholds.length; ++i) {
+                                if (incline <= inclineThresholds[i]) {
+                                    return i;
+                                }
+                            }
+                            return inclineThresholds.length;
+                        },
+                        options: [
+                            {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
+                            {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
+                            {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
+                        ]
+                    },
+
+                    "elapsed": {
+                        unit: "h",
+                        thresholds: equalDistribution(0, elapsedMax, 9),
+                        optionIdxFn: function(latLng, prevLatLng, index, points) {
+                            var i, time,
+                                timeThresholds = Visualizer.options["elapsed"].thresholds;
+
+                            time = (latLng.time - points[0].time) / 1000; 
+
+                            for (i = 0; i < timeThresholds.length; ++i) {
+                                if (time <= timeThresholds[i]) {
+                                    return i;
+                                }
+                            }
+                            return timeThresholds.length - 1;
+                        },
+                        options: [
+                            {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
+                            {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
+                            {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
+                        ]
+                    }
+            }
+
+            static show_polylines(map, allRoutes, new_vizualisation) {
+                //update buttons
+                var buttons = document.getElementsByClassName("btn-group")[0].children;
+                for (var i = 0; i < buttons.length; i++) {
+                    if(buttons[i].id == new_vizualisation)
+                        buttons[i].disabled = true;
+                    else
+                        buttons[i].disabled = false;
+                }
+
+                //update legend
+                var legend_labels = document.getElementsByClassName("legend-labels")[0].children;
+                for (var i = 0; i < legend_labels.length; i++) {
+                    if(new_vizualisation == "heatmap") {
+                        legend_labels[i].firstChild.data = "";
+                    }
+                    else if(new_vizualisation == "elapsed") {
+                        legend_labels[i].firstChild.data = (Visualizer.options[new_vizualisation].thresholds[i] / 3600).toFixed(2);
+                    }
+                    else
+                        legend_labels[i].firstChild.data = Visualizer.options[new_vizualisation].thresholds[i];
+                }
+
+                //update legend label
+                document.getElementById("legend-label").innerHTML = new_vizualisation + " (" + Visualizer.options[new_vizualisation].unit + ")";
+
+                //remove all polylines
+                for (var i = 0; i < polylines.length; i++) {
+                    polylines[i].remove(map);
+                }
+
+                polylines = [];
+
+                //create polylines
+                let opacity = 0.75;
+
+                if(new_vizualisation == "heatmap") {
+                    opacity = 0.5;
+                }
+
+                for (var i = 0; i < tours.length; i++) {
+                    //create multi options polyline
+                    var polyline = L.multiOptionsPolyline(allRoutes[i], {
+                        multiOptions: Visualizer.options[new_vizualisation],
+                        weight: 4,
+                        lineCap: 'round',
+                        opacity: opacity,
+                        smoothFactor: 1}
+                    ).addTo(map);
+
+                    //add polyline to array
+                    polylines.push(polyline);
+                }
+            }
+        }
 
         Visualizer.show_polylines(map, allRoutes, "heatmap");
 
