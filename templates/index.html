@@ -34,16 +34,16 @@
                     Komoot - Personal Heatmap
                     <div class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></div>
                 </h1>
-                <p>Mapping <b>32</b> of Oskar Krämer's bicycle rides.</p>
+                <p>Mapping <b>32</b> of Oskar's bicycle rides.</p>
 
                 <hr>
 
                 <h3 class='custom-title'>Visualisation</h3>
                 <div class="btn-group">
-                    <button>Heatmap</button>
-                    <button>Speed</button>
-                    <button>Incline</button>
-                    <button>Elapsed Time</button>
+                    <button id="heatmap" onclick="Visualizer.show_polylines(map, allRoutes, 'heatmap');">Heatmap</button>
+                    <button id="speed" onclick="Visualizer.show_polylines(map, allRoutes, 'speed');">Speed</button>
+                    <button id="incline" onclick="Visualizer.show_polylines(map, allRoutes, 'incline');">Incline</button>
+                    <button id="elapsed" onclick="Visualizer.show_polylines(map, allRoutes, 'elapsed');">Elapsed Time</button>
                 </div>
 
                 <hr>
@@ -76,68 +76,117 @@
 
     <script>
         class Visualizer {
-            static speed = {
-                optionIdxFn: function(latLng, prevLatLng) {
-                    var i, speed,
-                        speedThresholds = equalDistribution(0, speedMax, 9);
+            static options = {
+                    "heatmap": {
+                        optionIdxFn: function(latLng, prevLatLng) {
+                            return 0;
+                        },
+                        options: [
+                            {color: '#FF0000'}
+                        ]
+                    },
+                    "speed": {
+                        optionIdxFn: function(latLng, prevLatLng) {
+                            var i, speed,
+                                speedThresholds = equalDistribution(0, speedMax, 9);
 
-                    speed = getSpeed(latLng, prevLatLng);
+                            speed = getSpeed(latLng, prevLatLng);
 
-                    for (i = 0; i < speedThresholds.length; ++i) {
-                        if (speed <= speedThresholds[i]) {
-                            return i;
-                        }
+                            for (i = 0; i < speedThresholds.length; ++i) {
+                                if (speed <= speedThresholds[i]) {
+                                    return i;
+                                }
+                            }
+                            return speedThresholds.length;
+                        },
+                        options: [
+                            {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
+                            {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
+                            {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
+                        ]
+                    },
+
+                    "incline": {
+                        optionIdxFn: function(latLng, prevLatLng) {
+                            var i, incline,
+                                inclineThresholds = [0, 2, 4, 6, 8, 10, 12, 14, 16];
+
+                            incline = (latLng.alt - prevLatLng.alt) / latLng.distanceTo(prevLatLng) * 100;
+                            incline = Math.abs(incline);
+
+                            for (i = 0; i < inclineThresholds.length; ++i) {
+                                if (incline <= inclineThresholds[i]) {
+                                    return i;
+                                }
+                            }
+                            return inclineThresholds.length;
+                        },
+                        options: [
+                            {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
+                            {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
+                            {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
+                        ]
+                    },
+
+                    "elapsed": {
+                        optionIdxFn: function(latLng, prevLatLng, index, points) {
+                            var i, time,
+                                timeThresholds = equalDistribution(0, elapsedMax, 9);
+
+                            time = (latLng.time - points[0].time) / 1000; 
+
+                            for (i = 0; i < timeThresholds.length; ++i) {
+                                if (time <= timeThresholds[i]) {
+                                    return i;
+                                }
+                            }
+                            return timeThresholds.length - 1;
+                        },
+                        options: [
+                            {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
+                            {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
+                            {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
+                        ]
                     }
-                    return speedThresholds.length;
-                },
-                options: [
-                    {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
-                    {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
-                    {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
-                ]
             }
 
-            static incline = {
-                optionIdxFn: function(latLng, prevLatLng) {
-                    var i, incline,
-                        inclineThresholds = [0, 2, 4, 6, 8, 10, 12, 14, 16];
+            static show_polylines(map, allRoutes, new_vizualisation) {
+                //update buttons
+                var buttons = document.getElementsByClassName("btn-group")[0].children;
+                for (var i = 0; i < buttons.length; i++) {
+                    if(buttons[i].id == new_vizualisation)
+                        buttons[i].disabled = true;
+                    else
+                        buttons[i].disabled = false;
+                }
 
-                    incline = (latLng.alt - prevLatLng.alt) / latLng.distanceTo(prevLatLng) * 100;
-                    incline = Math.abs(incline);
+                //remove all polylines
+                for (var i = 0; i < polylines.length; i++) {
+                    polylines[i].remove(map);
+                }
 
-                    for (i = 0; i < inclineThresholds.length; ++i) {
-                        if (incline <= inclineThresholds[i]) {
-                            return i;
-                        }
-                    }
-                    return inclineThresholds.length;
-                },
-                options: [
-                    {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
-                    {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
-                    {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
-                ]
-            }
+                polylines = [];
 
-            static elapsed = {
-                optionIdxFn: function(latLng, prevLatLng, index, points) {
-                    var i, time,
-                        timeThresholds = equalDistribution(0, elapsedMax, 9);
+                //create polylines
+                let opacity = 0.75;
 
-                    time = (latLng.time - points[0].time) / 1000; 
+                if(new_vizualisation == "heatmap") {
+                    opacity = 0.5;
+                }
 
-                    for (i = 0; i < timeThresholds.length; ++i) {
-                        if (time <= timeThresholds[i]) {
-                            return i;
-                        }
-                    }
-                    return timeThresholds.length - 1;
-                },
-                options: [
-                    {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
-                    {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
-                    {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
-                ]
+                for (var i = 0; i < tours.length; i++) {
+                    //create multi options polyline
+                    var polyline = L.multiOptionsPolyline(allRoutes[i], {
+                        multiOptions: Visualizer.options[new_vizualisation],
+                        weight: 4,
+                        lineCap: 'round',
+                        opacity: opacity,
+                        smoothFactor: 1}
+                    ).addTo(map);
+
+                    //add polyline to array
+                    polylines.push(polyline);
+                }
             }
         }
 
@@ -217,6 +266,8 @@
         }
 
         // create map
+        var polylines = [];
+
         var map = L.map('map').setView([50.161, 7.749], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
@@ -267,17 +318,7 @@
         var speedMax = getSpeedMax(allRoutes);
         var elapsedMax = getElapsedMax(allRoutes);
 
-        //create polylines
-        for (var i = 0; i < tours.length; i++) {
-            //create multi options polyline
-            var polyline = L.multiOptionsPolyline(allRoutes[i], {
-                multiOptions: Visualizer.elapsed,
-                weight: 4,
-                lineCap: 'round',
-                opacity: 0.75,
-                smoothFactor: 1}
-            ).addTo(map);
-        }
+        Visualizer.show_polylines(map, allRoutes, "heatmap");
 
       </script>
       

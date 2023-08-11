@@ -7,20 +7,26 @@
     float: left; /* Float the buttons side by side */
     border-radius: 4px;
     margin: 0px 4px 4px 4px;
-  }
-  
-  .btn-group button:not(:last-child) {
+}
+
+/* Disabled button */
+.btn-group button:disabled {
+    background-color: #94adc3;
+    cursor: not-allowed;
+}
+
+.btn-group button:not(:last-child) {
     border-right: none; /* Prevent double borders */
-  }
-  
-  /* Clear floats (clearfix hack) */
-  .btn-group:after {
+}
+
+/* Clear floats (clearfix hack) */
+.btn-group:after {
     content: "";
     clear: both;
     display: table;
-  }
-  
-  /* Add a background color on hover */
-  .btn-group button:hover {
+}
+
+/* Add a background color on hover */
+.btn-group button:hover:enabled {
     background-color: #009DEE;
-  }
+}
