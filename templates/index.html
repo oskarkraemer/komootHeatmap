@@ -50,6 +50,30 @@
                     {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
                 ]
             }
+
+            static incline = {
+                optionIdxFn: function(latLng, prevLatLng) {
+                    var i, incline,
+                        inclineThresholds = [0, 2, 4, 6, 8, 10, 12, 14, 16];
+
+                    incline = (latLng.alt - prevLatLng.alt) / latLng.distanceTo(prevLatLng) * 100;
+                    incline = Math.abs(incline);
+
+                    console.log(incline);
+
+                    for (i = 0; i < inclineThresholds.length; ++i) {
+                        if (incline <= inclineThresholds[i]) {
+                            return i;
+                        }
+                    }
+                    return inclineThresholds.length;
+                },
+                options: [
+                    {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
+                    {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
+                    {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
+                ]
+            }
         }
 
         //Calculates the speed between two latLngs
