@@ -74,6 +74,29 @@
                     {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
                 ]
             }
+
+            static elapsed = {
+                optionIdxFn: function(latLng, prevLatLng, index, points) {
+                    var i, time,
+                        timeThresholds = equalDistribution(0, elapsedMax, 9);
+
+                    time = (latLng.time - points[0].time) / 1000; 
+
+                    console.log(time);
+
+                    for (i = 0; i < timeThresholds.length; ++i) {
+                        if (time <= timeThresholds[i]) {
+                            return i;
+                        }
+                    }
+                    return timeThresholds.length - 1;
+                },
+                options: [
+                    {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
+                    {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
+                    {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
+                ]
+            }
         }
 
         //Calculates the speed between two latLngs
@@ -110,6 +133,28 @@
             }
 
             return Math.round(sum / count);
+        }
+
+        //Gets max elapsed time
+        function getElapsedMax(allRoutes) {
+            var times = [];
+
+            for(var i = 0; i < allRoutes.length; i++) {
+                var points = allRoutes[i];
+
+                var time = points[points.length - 1].time - points[0].time;
+                time /= 1000; // ms to s
+
+                times.push(time);
+            }
+
+            // sort the times ascending
+            times.sort(function(a, b) {
+                return a - b;
+            });
+
+            //return median of upper 1/6 (1-(0,16 / 2))
+            return Math.round(times[Math.floor(times.length * 0.94)]);
         }
 
         //Gets euqal distribution
@@ -170,12 +215,13 @@
         }
 
         var speedMax = getSpeedMax(allRoutes);
+        var elapsedMax = getElapsedMax(allRoutes);
 
         //create polylines
         for (var i = 0; i < tours.length; i++) {
             //create multi options polyline
             var polyline = L.multiOptionsPolyline(allRoutes[i], {
-                multiOptions: Visualizer.speed,
+                multiOptions: Visualizer.elapsed,
                 weight: 4,
                 lineCap: 'round',
                 opacity: 0.75,
