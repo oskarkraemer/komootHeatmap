@@ -4,28 +4,74 @@
     <title>komootRoutes - Map</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/> <!-- Leaflet -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.css"> <!-- Leaflet-Sidebar -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css"> <!-- Font-Awesome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/legend.css') }}"> <!-- Legend -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/button_group.css') }}"> <!-- Button Group -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> <!-- Custom -->
 
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script> <!-- Leaflet -->
     <script src="https://cdn.jsdelivr.net/npm/gpxparser@3.0.8/dist/GPXParser.min.js"></script> <!-- GPX Parser -->
     <script src="https://hgoebl.github.io/Leaflet.MultiOptionsPolyline/Leaflet.MultiOptionsPolyline.js"></script> <!-- Leaflet-Polyline -->
-
-    
-
-    <style>
-        html, body, #map {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        .leaflet-marker-icon, .leaflet-marker-shadow {
-            opacity: 0;
-        }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/js/leaflet-sidebar.min.js"></script> <!-- Leaflet-Sidebar -->
 </head>
 <body>
+    <div id="sidebar" class="leaflet-sidebar collapsed">
+        <!-- Nav tabs -->
+        <div class="leaflet-sidebar-tabs">
+            <ul role="tablist"> <!-- top aligned tabs -->
+                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+                <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
+            </ul>
+        </div>
+    
+        <!-- Tab panes -->
+        <div class="leaflet-sidebar-content">
+            <div class="leaflet-sidebar-pane" id="home">
+                <h1 class="leaflet-sidebar-header">
+                    Komoot - Personal Heatmap
+                    <div class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></div>
+                </h1>
+                <p>Mapping <b>32</b> of Oskar Krämer's bicycle rides.</p>
+
+                <hr>
+
+                <h3 class='custom-title'>Visualisation</h3>
+                <div class="btn-group">
+                    <button>Heatmap</button>
+                    <button>Speed</button>
+                    <button>Incline</button>
+                    <button>Elapsed Time</button>
+                </div>
+
+                <hr>
+
+                <div class='my-legend'>
+                    <h3 class='custom-title'>Legend</h3>
+                    <div class='legend-scale'>
+                      <ul class='legend-labels'>
+                        <li><span style='background:#0000FF;' id="lgd0"></span>0 - 20%</li>
+                        <li><span style='background:#0040FF;' id="lgd1"></span>40%</li>
+                        <li><span style='background:#0080FF;' id="lgd2"></span>60%</li>
+                        <li><span style='background:#00FFB0;' id="lgd3"></span>80%</li>
+                        <li><span style='background:#00E000;' id="lgd4"></span>100%</li>
+                        <li><span style='background:#80FF00;' id="lgd5"></span>100%</li>
+                        <li><span style='background:#FFFF00;' id="lgd6"></span>100%</li>
+                        <li><span style='background:#FFC000;' id="lgd7"></span>100%</li>
+                        <li><span style='background:#FF0000;' id="lgd8"></span>100%</li>
+                      </ul>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="leaflet-sidebar-pane" id="profile">
+                <h1 class="leaflet-sidebar-header">Profile<div class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></div></h1>
+            </div>
+        </div>
+    </div>
+
     <div id="map" style="height: 100vh;"></div>
 
     <script>
@@ -59,8 +105,6 @@
                     incline = (latLng.alt - prevLatLng.alt) / latLng.distanceTo(prevLatLng) * 100;
                     incline = Math.abs(incline);
 
-                    console.log(incline);
-
                     for (i = 0; i < inclineThresholds.length; ++i) {
                         if (incline <= inclineThresholds[i]) {
                             return i;
@@ -81,8 +125,6 @@
                         timeThresholds = equalDistribution(0, elapsedMax, 9);
 
                     time = (latLng.time - points[0].time) / 1000; 
-
-                    console.log(time);
 
                     for (i = 0; i < timeThresholds.length; ++i) {
                         if (time <= timeThresholds[i]) {
@@ -179,6 +221,14 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
           maxZoom: 18,
+        }).addTo(map);
+
+        //create sidebar
+        var sidebar = L.control.sidebar({
+            autopan: false,
+            closeButton: true,
+            container: 'sidebar',
+            position: 'left',
         }).addTo(map);
 
         //query the tours data
