@@ -112,6 +112,7 @@ To get a local copy up and running follow these simple steps.
 1. **Log in** with your credentials at http://localhost:5000.
 	* NOTE: to obtain the ***User-ID*** head over to https://komoot.com
 		1. Go to your ***profile page***
+            <br>
 			![Profile page explanation](https://github.com/oskarkraemer/komootHeatmap/blob/master/docs/demo-profileid.png?raw=true)
 			<br>
 			2. Copy the **large number in the URL** (ie. ```https://komoot.com/user/3016841724598```)
