@@ -6,7 +6,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="https://github.com/oskarkraemer/komootHeatmap/blob/master/docs/heatmap-icon.png?raw=true" alt="Logo" width="137" height="114">
+    <img src="https://github.com/oskarkraemer/komootHeatmap/blob/master/docs/heatmap-icon.png?raw=true" alt="Logo" width="243" height="243">
   </a>
 
 <h3 align="center">Komoot - Personal Heatmap</h3>
