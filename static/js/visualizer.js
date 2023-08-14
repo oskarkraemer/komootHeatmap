@@ -76,11 +76,11 @@ function equalDistribution(start, end, midpoints) {
 // create map
 var polylines = [];
 
+var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {id: 'OSM', attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'}),
+    satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {id: 'satellite', attribution: 'Tiles &copy; Esri &mdash; Source: Esri, [...] and the GIS User Community'});
+
 var map = L.map('map').setView([50.161, 7.749], 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
-  maxZoom: 18,
-}).addTo(map);
+osm.addTo(map);
 
 //create sidebar
 var sidebar = L.control.sidebar({
@@ -261,6 +261,16 @@ class Visualizer {
 
             //add polyline to array
             polylines.push(polyline);
+        }
+    }
+
+    static change_layer(new_layer) {
+        if(new_layer == "osm") {
+            map.removeLayer(satellite);
+            map.addLayer(osm);
+        } else {
+            map.removeLayer(osm);
+            map.addLayer(satellite);
         }
     }
 }

@@ -28,3 +28,7 @@
 .my-legend a {
     color: #777;
 }
+
+.my-legend {
+    margin-bottom: 24px;
+}
