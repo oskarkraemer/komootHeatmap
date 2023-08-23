@@ -129,7 +129,7 @@ To get a local copy up and running follow these simple steps.
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Get access to Komoot's official API and OAuth2
+- ~~[ ] Get access to Komoot's official API and OAuth2~~
 - [ ] Offer a ***hosted solution*** for easy access
 - [ ] Social features
     - [ ] Sharing your heatmap with friends
