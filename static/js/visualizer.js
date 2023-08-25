@@ -104,6 +104,9 @@ if (request.status === 200) {
     window.location.replace("./login");
 }
 
+//update tours amount label
+document.getElementById("amount-label").innerHTML = tours.length;
+
 //convert gpx files to leaflet latlngs
 var allRoutes = [];
 

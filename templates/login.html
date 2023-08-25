@@ -33,7 +33,11 @@
 
             h1 {
             font-size: 30px;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
+            }
+
+            h3 {
+                margin: 17px;
             }
 
             label, input {
@@ -69,19 +73,35 @@
             button:hover {
                 background-color: #9cde4e;
             }
+
+            a {
+                color: rgb(224, 106, 3);
+            }
         </style>
     </head>
     <body> 
         <form method="post">
-            <h1>Login with <span style="color:#4f850d">Komoot</span></h1>
+            <img src="https://github.com/oskarkraemer/komootHeatmap/raw/master/docs/heatmap-icon.png?raw=true" width="100px">
+
+            <h1>Komoot <span style="color:rgb(224, 106, 3)">Heatmap</span></h1>
+            <a href="https://www.gnu.org/licenses/gpl-3.0" rel="nofollow"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3" style="max-width: 100%;"></a>
+            <a href="https://github.com/oskarkraemer/komootHeatmap"><img src="https://img.shields.io/github/stars/oskarkraemer/komootHeatmap.svg?style=social&amp;label=Star&amp;maxAge=2592" alt="GitHub stars" style="max-width: 100%;"></a>
+
+            <p style="font-size: 14px; margin-bottom: 18px;"><b>NOTE:</b> This site is not affiliated with Komoot. <br>Yet, <b>NO</b> credentials will be saved on any server. <br> <a target="_blank" rel="noopener noreferrer" href="https://github.com/oskarkraemer/komootHeatmap#installation">Learn more</a></p>
+
+            <hr>
+
+            <h3>Login with <span style="color:#4f850d">Komoot</span></h3>
+
+            {% if error %}
+                <p style="color: red;">Incorrect credentials</p>
+            {% endif %}
+
             <label for="email">Email</label>
             <input type="email" id="email" name="email" required>
 
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
-
-            <label for="userid">User-ID</label>
-            <input type="text" id="userid" name="userid" required>
 
             <button type="submit">Sign In</button>
           </form>

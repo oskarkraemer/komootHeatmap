@@ -5,7 +5,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
+  <a href="https://komoot.oskarkraemer.me/">
     <img src="https://github.com/oskarkraemer/komootHeatmap/blob/master/docs/heatmap-icon.png?raw=true" alt="Logo" width="160" height="160">
   </a>
 
@@ -15,7 +15,7 @@
     Quickly map <b>all the places</b> you have been on one map.
     <br />
     <br />
-    <a href="https://oskarkraemer.github.io/komootHeatmap/">View Demo</a>
+    <a href="https://komoot.oskarkraemer.me/">Visit Website</a>
     ·
     <a href="https://github.com/oskarkraemer/komootHeatmap/issues">Report Bug</a>
     ·
@@ -47,7 +47,6 @@
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -55,6 +54,8 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
+<p align="center">🚀 Try the tool: <a href="https://komoot.oskarkraemer.me/">Komoot - Personal Heatmap</a></p>
+
 Welcome to the Komoot - Personal Heatmap! This project aims to provide cyclists with an interactive and informative tool for <b>visualizing their riding experiences</b>. This program <b>generates heatmaps</b> that showcase all cycling routes over time, allowing users to <b>explore and visualize</b> their <b>popular paths and hotspots</b>.
 <br>
 
@@ -85,7 +86,10 @@ To get a local copy up and running follow these simple steps.
 
 ### Installation
 
-***NOTE***: As of now, ***I do not have access to Komoot's official API***. Therefore, I rely on a reverse-engineered solution of their frontend API which ***does not support OAuth2*** and only allows verification through email and password. As sending account credentials **poses a security risk** when sending to my own server, I currently **do not offer a hosted solution** for the project but ***only a demo***. I am hoping this will change in the future. 
+***NOTE***: Sadly, Komoot does not give independent and small developers access to their API. Therefore, I rely on a community-made solution. (Thank you @matiyau for [komPYoot](https://github.com/matiyau/komPYoot))
+This however, ***does not support OAuth2*** and only allows verification through email and password. I am ***not*** interested in your data and ***will not*** use it for any other purposes than to authenticate you.
+It **will not** be stored on any sorver. If you are still not comfortable with this, feel free to host the project yourself.
+
 
 1. Clone the repo
    ```sh
@@ -97,9 +101,9 @@ To get a local copy up and running follow these simple steps.
    ```
 3. Create Docker container and run
    ```sh
-	docker run -p 5000:5000 komoot-heatmap:latest
+	docker run -p 80:80 komoot-heatmap:latest
    ```
-4. Access http://localhost:5000 through an internet browser
+4. Access http://localhost:80 through an internet browser
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -109,14 +113,7 @@ To get a local copy up and running follow these simple steps.
 ## Usage
 
 
-1. **Log in** with your credentials at http://localhost:5000.
-	* NOTE: to obtain the ***User-ID*** head over to https://komoot.com
-		1. Go to your ***profile page***
-            <br>
-			![Profile page explanation](https://github.com/oskarkraemer/komootHeatmap/blob/master/docs/demo-profileid.png?raw=true)
-			<br>
-			2. Copy the **large number in the URL** (ie. ```https://komoot.com/user/3016841724598```)
-			<br>
+1. **Log in** with your credentials at http://localhost:80.
 
 2. You may choose from ***4*** different visualizations:
 	* ***Heatmap:*** Displays routes in an opaque red shade, allowing you to see the most used paths
@@ -129,8 +126,8 @@ To get a local copy up and running follow these simple steps.
 <!-- ROADMAP -->
 ## Roadmap
 
-- ~~[ ] Get access to Komoot's official API and OAuth2~~
-- [ ] Offer a ***hosted solution*** for easy access
+- ~~Get access to Komoot's official API and OAuth2~~
+- [x] Offer a ***hosted solution*** for easy access [[Visit hosted version](https://komoot.oskarkraemer.me/)]
 - [ ] Social features
     - [ ] Sharing your heatmap with friends
     - [ ] Comparing your heatmap with other people
