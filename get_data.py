@@ -1,13 +1,7 @@
-from requests.auth import HTTPBasicAuth
-import time
-
-import komPYoot
-
-login_url = "https://account.komoot.com/v1/signin"
-
+import kompyoot
 
 def auth(email, password) -> bool:
-	a = komPYoot.API()
+	a = kompyoot.API()
 
 	return a.login(email, password)
 
@@ -23,19 +17,17 @@ def get_all_tours_gpx(email, password, planned = False, recorded = True):
 		return False
 
 	#Authenticate
-	a = komPYoot.API()
+	a = kompyoot.API()
 
 	if not a.login(email, password):
 		return False
 
 	#Get all tours
-	tours = a.get_user_tours_list(tour_type=komPYoot.TourType.RECORDED)
+	tours = a.get_user_tours_list(tour_type=kompyoot.TourType.RECORDED)
 	
 	gpx_files = []
 	for tour in tours:
-		begin_time = time.time()
 		gpx_files.append(a.download_tour_gpx(tour["id"]))
-		print(f"Took: {time.time() - begin_time}")
 	
 	return gpx_files
 
@@ -46,7 +38,7 @@ Returns the display name if successful, False otherwise
 """
 def get_display_name(email, password):
 	#Authenticate
-	a = komPYoot.API()
+	a = kompyoot.API()
 
 	if not a.login(email, password):
 		return False
