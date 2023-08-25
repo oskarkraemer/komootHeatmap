@@ -1,5 +1,5 @@
 # Use a multi-architecture base image
-FROM --platform=$TARGETPLATFORM python:3.8-alpine
+FROM --platform=$TARGETPLATFORM python:3.11.4-alpine
 
 # Set the working directory
 WORKDIR /app
@@ -20,4 +20,4 @@ EXPOSE 80
 ENV FLASK_APP=app.py
 
 # Start the Flask application
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=80"]
