@@ -79,7 +79,7 @@ var polylines = [];
 var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {id: 'OSM', attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'}),
     satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {id: 'satellite', attribution: 'Tiles &copy; Esri &mdash; Source: Esri, [...] and the GIS User Community'});
 
-var map = L.map('map').setView([50.161, 7.749], 13);
+var map = L.map('map').setView([51.16, 10.44], 6);
 osm.addTo(map);
 
 //create sidebar
