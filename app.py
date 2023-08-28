@@ -4,8 +4,12 @@ import get_data
 import time
 import json
 
+import logging
+
 app = Flask(__name__)
 app.secret_key = 'pU4VmigPwFcA1337'
+
+logging.basicConfig(filename='app.log', level=logging.INFO)
 
 @app.route('/')
 def home():
