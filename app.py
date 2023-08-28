@@ -24,8 +24,8 @@ def home():
 
 @app.route('/tour/<tourid>')
 def gpx(tourid):
-    if not is_logged_in():
-        return Response(status=401)
+    #if not is_logged_in():
+    #    return Response(status=401)
 
     gpx_data = get_data.get_tour_gpx(request.cookies.get('api'), tourid)
     if not gpx_data:

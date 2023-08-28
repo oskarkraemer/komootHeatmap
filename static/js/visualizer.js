@@ -127,7 +127,7 @@ var polylines = [];
 var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {id: 'OSM', attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'}),
     satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {id: 'satellite', attribution: 'Tiles &copy; Esri &mdash; Source: Esri, [...] and the GIS User Community'});
 
-var map = L.map('map').setView([51.16, 10.44], 6);
+var map = L.map('map', {preferCanvas: true}).setView([51.16, 10.44], 6);
 osm.addTo(map);
 
 //create sidebar
@@ -142,6 +142,10 @@ var speedMax = 0;
 var elapsedMax = 0;
 
 var allRoutes = [];
+
+var speeds = [];
+
+var viz_counter = 0;
 
 //Visualizer class
 class Visualizer {
@@ -160,11 +164,11 @@ class Visualizer {
             "speed": {
                 unit: "km/h",
                 thresholds: [],
-                optionIdxFn: function(latLng, prevLatLng) {
+                optionIdxFn: function(latLng, prevLatLng, index) {
                     var i, speed,
                         speedThresholds = Visualizer.options["speed"].thresholds;
 
-                    speed = getSpeed(latLng, prevLatLng);
+                    speed = speeds[viz_counter][index];
 
                     for (i = 0; i < speedThresholds.length; ++i) {
                         if (speed <= speedThresholds[i]) {
@@ -268,9 +272,9 @@ class Visualizer {
             opacity = 0.5;
         }
 
-        for (var i = 0; i < allRoutes.length; i++) {
+        for (viz_counter = 0; viz_counter < allRoutes.length; viz_counter++) {
             //create multi options polyline
-            var polyline = L.multiOptionsPolyline(allRoutes[i], {
+            var polyline = L.multiOptionsPolyline(allRoutes[viz_counter], {
                 multiOptions: Visualizer.options[new_vizualisation],
                 weight: 4,
                 lineCap: 'round',
@@ -281,6 +285,24 @@ class Visualizer {
             //add polyline to array
             polylines.push(polyline);
         }
+    }
+
+    static precalculate_speeds() {
+        //calculate speeds
+        for (var i = 0; i < allRoutes.length; i++) {
+            var latLngSpeeds = [];
+
+            var points = allRoutes[i];
+
+            for (var j = 1; j < points.length - 1; j++) {
+                var speed = getSpeed(points[j], points[j-1]);
+                latLngSpeeds.push(speed);
+            }
+
+            speeds.push(latLngSpeeds);
+        }
+
+        console.log(speeds);
     }
 
     static change_layer(new_layer) {
@@ -324,6 +346,8 @@ loadGPX(function(tours) {
     console.log(Visualizer.options["elapsed"].thresholds);
 
     allRoutes = convertedRoutes;
+
+    Visualizer.precalculate_speeds();
 
     Visualizer.show_polylines(map, allRoutes, "heatmap");
 });
