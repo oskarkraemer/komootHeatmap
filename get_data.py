@@ -1,9 +1,9 @@
 import kompyoot
 
-def auth(email, password) -> bool:
+def auth(email, password) -> dict:
 	a = kompyoot.API()
 
-	return a.login(email, password)
+	return {"result": a.login(email, password), 'api': a}
 
 
 """
@@ -11,25 +11,28 @@ Gets GPX-data from ALL tours of a user
 
 Returns a list of GPX-files if successful, False otherwise
 """
-def get_all_tours_gpx(email, password, planned = False, recorded = True):
+def get_tour_gpx(a, tourid):
+	api = kompyoot.API()
+	api.from_json(a)
+
+	#Get specific tour
+	return api.download_tour_gpx(tourid)
+
+def get_tours_list(a, planned = False, recorded = True) -> list:
+	api = kompyoot.API()
+	api.from_json(a)
+
 	#Check if both planned and recorded are false
 	if not planned and not recorded:
 		return False
 
-	#Authenticate
-	a = kompyoot.API()
-
-	if not a.login(email, password):
-		return False
-
 	#Get all tours
-	tours = a.get_user_tours_list(tour_type=kompyoot.TourType.RECORDED)
+	tours = api.get_user_tours_list(tour_type=kompyoot.TourType.RECORDED)
+
+	#filter tours dict to only include 'id'
+	tours_id = [tour['id'] for tour in tours]
 	
-	gpx_files = []
-	for tour in tours:
-		gpx_files.append(a.download_tour_gpx(tour["id"]))
-	
-	return gpx_files
+	return tours_id
 
 """
 Gets the user's display name

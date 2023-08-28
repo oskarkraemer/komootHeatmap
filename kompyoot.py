@@ -10,6 +10,7 @@ from enum import IntFlag, auto
 import requests
 import warnings
 import xml.etree.ElementTree as ET
+import json
 
 _LOGIN_URL = "https://api.komoot.de/v006/account/email/%s/"
 _TOURS_URL = "https://api.komoot.de/v007/users/%s/tours/"
@@ -146,6 +147,38 @@ class API():
             details["user"]["imageUrl"]
             if details["user"]["content"]["hasImage"] else None)
         self.user_details["token"] = details["password"]
+        return True
+
+    def to_json(self):
+        """
+        Return a JSON string containing the user details.
+
+        Returns
+        -------
+        str
+            JSON string.
+
+        """
+        return json.dumps(self.user_details)
+
+    def from_json(self, json_str):
+        """
+        Load user details from a JSON string.
+
+        Parameters
+        ----------
+        json_str : str
+            JSON string.
+
+        Returns
+        -------
+        bool
+            True if loading is successful, False otherwise.
+
+        """
+        self.user_details = {}
+        self.user_details = json.loads(json_str)
+
         return True
 
     def get_user_email(self):

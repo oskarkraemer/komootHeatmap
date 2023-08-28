@@ -73,6 +73,54 @@ function equalDistribution(start, end, midpoints) {
     return result;
 }
 
+//Load gpx files
+function loadGPX(callback) {
+    //Get tours id list
+    var tours_id = [];
+
+    var request = new XMLHttpRequest();
+    request.open('GET', './tours_list', false);
+    request.send(null);
+
+    if (request.status === 200) {
+        tours_id = JSON.parse(request.responseText);
+        console.log(tours_id);
+    } else {
+        console.log('Error: ' + request.status);
+        window.location.replace("./login");
+    }
+
+    //set progress bar max to tours length
+    document.getElementById("gpx_progress").max = tours_id.length;
+
+    //query the tours data
+    var tours = [];
+
+    for (var i = 0; i < tours_id.length; i++) {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                tours.push(this.responseText);
+            }
+        };
+
+        request.open('GET', './tour/' + tours_id[i], true);
+        request.send(null);
+    }
+
+    //wait for all requests to finish
+    var interval = setInterval(function() {
+        document.getElementById("gpx_progress").value = tours.length;
+
+        if(tours.length == tours_id.length) {
+            document.getElementById("progress_box").style.display = "none";
+
+            clearInterval(interval);
+            callback(tours);
+        }
+    }, 100);
+}
+
 // create map
 var polylines = [];
 
@@ -90,46 +138,14 @@ var sidebar = L.control.sidebar({
     position: 'left',
 }).addTo(map);
 
-//query the tours data
-var tours = {};
+var speedMax = 0;
+var elapsedMax = 0;
 
-var request = new XMLHttpRequest();
-request.open('GET', './tours_data', false);
-request.send(null);
-
-if (request.status === 200) {
-    tours = JSON.parse(request.responseText);
-} else {
-    console.log('Error: ' + request.status);
-    window.location.replace("./login");
-}
-
-//update tours amount label
-document.getElementById("amount-label").innerHTML = tours.length;
-
-//convert gpx files to leaflet latlngs
 var allRoutes = [];
 
-for (var i = 0; i < tours.length; i++) {
-    var parser = new gpxParser();
-    parser.parse(tours[i]);
-
-    var points = parser.tracks[0].points;
-    var gpx_latlngs = [];
-
-    for (var j = 0; j < points.length; j++) {
-        var latlng = new L.latLng(points[j].lat, points[j].lon, points[j].ele);
-        latlng.time = points[j].time
-        gpx_latlngs.push(latlng);
-    }
-
-    allRoutes.push(gpx_latlngs);
-}
-
-var speedMax = getSpeedMax(allRoutes);
-var elapsedMax = getElapsedMax(allRoutes);
-
+//Visualizer class
 class Visualizer {
+
     static options = {
             "heatmap": {
                 unit: "",
@@ -143,7 +159,7 @@ class Visualizer {
             },
             "speed": {
                 unit: "km/h",
-                thresholds: equalDistribution(0, speedMax, 9),
+                thresholds: [],
                 optionIdxFn: function(latLng, prevLatLng) {
                     var i, speed,
                         speedThresholds = Visualizer.options["speed"].thresholds;
@@ -190,7 +206,7 @@ class Visualizer {
 
             "elapsed": {
                 unit: "h",
-                thresholds: equalDistribution(0, elapsedMax, 9),
+                thresholds: [],
                 optionIdxFn: function(latLng, prevLatLng, index, points) {
                     var i, time,
                         timeThresholds = Visualizer.options["elapsed"].thresholds;
@@ -252,7 +268,7 @@ class Visualizer {
             opacity = 0.5;
         }
 
-        for (var i = 0; i < tours.length; i++) {
+        for (var i = 0; i < allRoutes.length; i++) {
             //create multi options polyline
             var polyline = L.multiOptionsPolyline(allRoutes[i], {
                 multiOptions: Visualizer.options[new_vizualisation],
@@ -278,4 +294,36 @@ class Visualizer {
     }
 }
 
-Visualizer.show_polylines(map, allRoutes, "heatmap");
+loadGPX(function(tours) {
+    //update tours amount label
+    document.getElementById("amount-label").innerHTML = tours.length;
+
+    //convert gpx files to leaflet latlngs
+    var convertedRoutes = [];
+
+    for (var i = 0; i < tours.length; i++) {
+        var parser = new gpxParser();
+        parser.parse(tours[i]);
+
+        var points = parser.tracks[0].points;
+        var gpx_latlngs = [];
+
+        for (var j = 0; j < points.length; j++) {
+            var latlng = new L.latLng(points[j].lat, points[j].lon, points[j].ele);
+            latlng.time = points[j].time
+            gpx_latlngs.push(latlng);
+        }
+
+        convertedRoutes.push(gpx_latlngs);
+    }
+
+    Visualizer.options["speed"].thresholds = equalDistribution(0, getSpeedMax(convertedRoutes), 9);
+    Visualizer.options["elapsed"].thresholds = equalDistribution(0, getElapsedMax(convertedRoutes), 9);
+
+    console.log(Visualizer.options["speed"].thresholds);
+    console.log(Visualizer.options["elapsed"].thresholds);
+
+    allRoutes = convertedRoutes;
+
+    Visualizer.show_polylines(map, allRoutes, "heatmap");
+});

@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, Response, make_response
+
 import get_data
 import time
 import json
 
 app = Flask(__name__)
-
+app.secret_key = 'pU4VmigPwFcA1337'
 
 @app.route('/')
 def home():
@@ -17,17 +18,29 @@ def home():
     return render_template('index.html', display_name=get_data.get_display_name(email, password))
 
 
-@app.route('/tours_data')
-def gpx():
+@app.route('/tour/<tourid>')
+def gpx(tourid):
     if not is_logged_in():
         return Response(status=401)
 
-    gpx_data = get_data.get_all_tours_gpx(request.cookies.get('email'), request.cookies.get('password'))
+    gpx_data = get_data.get_tour_gpx(request.cookies.get('api'), tourid)
     if not gpx_data:
         resp = make_response("An error has occurred!", 500)
         return resp
 
-    return Response(json.dumps(gpx_data), mimetype='application/json')
+    return Response(gpx_data, mimetype='application/text')
+
+@app.route('/tours_list')
+def tours_amount():
+    if not is_logged_in():
+        return Response(status=401)
+
+    tours_list = get_data.get_tours_list(request.cookies.get('api'))
+    if not tours_list:
+        resp = make_response("An error has occurred!", 500)
+        return resp
+
+    return Response(json.dumps(tours_list), mimetype='application/json')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -37,7 +50,8 @@ def login():
         password = request.form['password']
 
         #Check if credentials are correct
-        if not get_data.auth(email, password):
+        auth_resp = get_data.auth(email, password)
+        if not auth_resp['result']:
             return render_template('login.html', error=True)
         
         #Set cookies
@@ -48,6 +62,7 @@ def login():
 
         resp.set_cookie('email', email, max_age=max_age, expires=experation)
         resp.set_cookie('password', password, max_age=max_age, expires=experation)
+        resp.set_cookie('api', auth_resp['api'].to_json(), max_age=max_age, expires=experation)
 
         return resp
     else:
@@ -81,6 +96,4 @@ def is_logged_in():
     return True
 
 if __name__ == '__main__':
-    app.secret_key = 'pU4VmigPwFcA1337'
-
     app.run(debug=False, host='0.0.0.0', port=80)
