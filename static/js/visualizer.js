@@ -276,14 +276,23 @@ class Visualizer {
             //create multi options polyline
             var polyline = L.multiOptionsPolyline(allRoutes[viz_counter], {
                 multiOptions: Visualizer.options[new_vizualisation],
-                weight: 4,
+                weight: document.getElementById("line_range").value,
                 lineCap: 'round',
                 opacity: opacity,
                 smoothFactor: 1}
             ).addTo(map);
 
+            //set polyline weight
+            this.set_line_width(document.getElementById("line_range").value);
+
             //add polyline to array
             polylines.push(polyline);
+        }
+    }
+
+    static set_line_width(new_width) {
+        for (var i = 0; i < polylines.length; i++) {
+            polylines[i].setStyle({weight: new_width});
         }
     }
 
@@ -350,4 +359,9 @@ loadGPX(function(tours) {
     Visualizer.precalculate_speeds();
 
     Visualizer.show_polylines(map, allRoutes, "heatmap");
+});
+
+//add event listener to slider with id 'line_range'
+document.getElementById("line_range").addEventListener("input", function() {
+    Visualizer.set_line_width(this.value);
 });
