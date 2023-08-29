@@ -1,3 +1,15 @@
+var tours_id = [];
+
+const SPORTS = {
+    "hiking": ["hike", "mountaineering", "climbing"],
+    "cycling": ["citybike", "e_touringbicycle", "touringbicycle"],
+    "mountainbiking": ["e_mtb", "mtb", "downhillbike", "e_mtb_advanced", "mtb_advanced"],
+    "roadbiking": ["e_racebike", "racebike"],
+    "running": ["jogging", "nordicwalking"],
+    "gravel": ["e_mtb_easy", "mtb_easy"],
+    "other": ["unicycle", "skaten", "skitour", "nordic", "skialpin", "snowshoe", "other"]
+};
+
 //Calculates the speed between two latLngs
 function getSpeed(latLng, prevLatLng) {
     var speed = latLng.distanceTo(prevLatLng); // meters
@@ -76,8 +88,6 @@ function equalDistribution(start, end, midpoints) {
 //Load gpx files
 function loadGPX(callback) {
     //Get tours id list
-    var tours_id = [];
-
     var request = new XMLHttpRequest();
     request.open('GET', './tours_list', false);
     request.send(null);
@@ -104,7 +114,7 @@ function loadGPX(callback) {
             }
         };
 
-        request.open('GET', './tour/' + tours_id[i], true);
+        request.open('GET', './tour/' + tours_id[i]["id"], true);
         request.send(null);
     }
 
@@ -119,6 +129,20 @@ function loadGPX(callback) {
             callback(tours);
         }
     }, 100);
+}
+
+function get_all_filters() {
+    var filters = [];
+
+    var checkboxes = document.getElementsByClassName("filter-checkbox");
+
+    for (var i = 0; i < checkboxes.length; i++) {
+        if(checkboxes[i].checked) {
+            filters.push(checkboxes[i].id);
+        }
+    }
+
+    return filters;
 }
 
 // create map
@@ -146,6 +170,7 @@ var allRoutes = [];
 var speeds = [];
 
 var viz_counter = 0;
+var active_vizualisation = "heatmap";
 
 //Visualizer class
 class Visualizer {
@@ -232,7 +257,14 @@ class Visualizer {
             }
     }
 
-    static show_polylines(map, allRoutes, new_vizualisation) {
+    static show_polylines(map, allRoutes, new_vizualisation = "") {
+        //update vizualisation
+        if(new_vizualisation == "") {
+            new_vizualisation = active_vizualisation;
+        } else {
+            active_vizualisation = new_vizualisation;
+        }
+
         //update buttons
         var buttons = document.getElementsByClassName("btn-group")[0].children;
         for (var i = 0; i < buttons.length; i++) {
@@ -273,20 +305,33 @@ class Visualizer {
         }
 
         for (viz_counter = 0; viz_counter < allRoutes.length; viz_counter++) {
-            //create multi options polyline
-            var polyline = L.multiOptionsPolyline(allRoutes[viz_counter], {
-                multiOptions: Visualizer.options[new_vizualisation],
-                weight: document.getElementById("line_range").value,
-                lineCap: 'round',
-                opacity: opacity,
-                smoothFactor: 1}
-            ).addTo(map);
+            //check if tour should be filtered
+            var filters = get_all_filters();
+            var tour_sport = tours_id[viz_counter]["sport"];
 
-            //set polyline weight
-            this.set_line_width(document.getElementById("line_range").value);
+            var allowed_sports = [];
 
-            //add polyline to array
-            polylines.push(polyline);
+            for(var i = 0; i < filters.length; i++) {
+                allowed_sports = allowed_sports.concat(SPORTS[filters[i]]);
+            }
+
+            if(allowed_sports.length > 0 && allowed_sports.includes(tour_sport)) {
+            
+                //create multi options polyline
+                var polyline = L.multiOptionsPolyline(allRoutes[viz_counter], {
+                    multiOptions: Visualizer.options[new_vizualisation],
+                    weight: document.getElementById("line_range").value,
+                    lineCap: 'round',
+                    opacity: opacity,
+                    smoothFactor: 1}
+                ).addTo(map);
+
+                //set polyline weight
+                this.set_line_width(document.getElementById("line_range").value);
+
+                //add polyline to array
+                polylines.push(polyline);
+            }
         }
     }
 
@@ -365,3 +410,10 @@ loadGPX(function(tours) {
 document.getElementById("line_range").addEventListener("input", function() {
     Visualizer.set_line_width(this.value);
 });
+
+//add event listener to filter checkboxes
+document.querySelector('#filter-container').onclick = function(ev) {
+    if(ev.target.value) {
+        Visualizer.show_polylines(map, allRoutes);
+    }
+};

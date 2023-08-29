@@ -29,8 +29,10 @@ def get_tours_list(a, planned = False, recorded = True) -> list:
 	#Get all tours
 	tours = api.get_user_tours_list(tour_type=kompyoot.TourType.RECORDED)
 
-	#filter tours dict to only include 'id'
-	tours_id = [tour['id'] for tour in tours]
+	#filter tours dict to only include 'id' and 'sport' keys
+	tours_id = []
+	for tour in tours:
+		tours_id.append({'id': tour['id'], 'sport': tour['sport']})
 	
 	return tours_id
 
