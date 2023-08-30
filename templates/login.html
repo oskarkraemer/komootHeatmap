@@ -2,89 +2,16 @@
 <html>
   <head>
         <title>komootRoutes - Login</title>
-        <style>
-            body {
-            background-image: 
-                linear-gradient(
-                    rgba(0, 0, 0, 0.7), 
-                    rgba(0, 0, 0, 0.7)
-                ),
-                url("{{url_for('static', filename='img/bike_bg.jpg')}}");
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-            background-size: cover;
-            background-position: 50% 0;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-
-            font-family: 'Roboto', sans-serif;
-            }
-
-            form {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 40px;
-            min-width: 300px;
-            border-radius: 10px;
-            text-align: center;
-            }
-
-            h1 {
-            font-size: 30px;
-            margin-bottom: 5px;
-            }
-
-            h3 {
-                margin: 17px;
-            }
-
-            label, input {
-            display: block;
-            margin-bottom: 10px;
-            }
-
-            label {
-                font-weight: bold;
-            }
-
-            input {
-            padding: 5px;
-            width: 100%;
-            border-radius: 5px;
-            border: 2px solid #ccc;
-            }
-
-            input:focus {
-                border-color: #4f850d;
-                outline: none;
-            }
-
-            button {
-            padding: 10px 20px;
-            background-color: #4f850d;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            }
-
-            button:hover {
-                background-color: #9cde4e;
-            }
-
-            a {
-                color: rgb(224, 106, 3);
-            }
-        </style>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style_login.css') }}">
     </head>
     <body> 
         <form method="post">
             <img src="https://github.com/oskarkraemer/komootHeatmap/raw/master/docs/heatmap-icon.png?raw=true" width="100px">
 
             <h1>Komoot <span style="color:rgb(224, 106, 3)">Heatmap</span></h1>
-            <a href="https://www.gnu.org/licenses/gpl-3.0" rel="nofollow"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3" style="max-width: 100%;"></a>
             <a href="https://github.com/oskarkraemer/komootHeatmap"><img src="https://img.shields.io/github/stars/oskarkraemer/komootHeatmap.svg?style=social&amp;label=Star&amp;maxAge=2592" alt="GitHub stars" style="max-width: 100%;"></a>
 
             <p style="font-size: 14px; margin-bottom: 18px;"><b>NOTE:</b> This site is not affiliated with Komoot. <br>Yet, <b>NO</b> credentials will be saved on any server. <br> <a target="_blank" rel="noopener noreferrer" href="https://github.com/oskarkraemer/komootHeatmap#installation">Learn more</a></p>
