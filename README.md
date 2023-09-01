@@ -54,7 +54,8 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-<p align="center">🚀 Try the tool: <a href="https://komoot.oskarkraemer.me/">Komoot - Personal Heatmap</a></p>
+<p align="center">🚀 Try the tool: <a href="https://komoot.oskarkraemer.me/" target="_blank">Komoot - Personal Heatmap</a></p>
+<p align="center">📰 Read the story: <a href="https://medium.com/@oskarkraemer/komoot-heatmap-combining-cycling-and-programming-e0a64f6438eb" target="_blank">Komoot Heatmap: Combining Cycling and Programming</a></p>
 
 Welcome to the Komoot - Personal Heatmap! This project aims to provide cyclists with an interactive and informative tool for <b>visualizing their riding experiences</b>. This program <b>generates heatmaps</b> that showcase all cycling routes over time, allowing users to <b>explore and visualize</b> their <b>popular paths and hotspots</b>.
 <br>
