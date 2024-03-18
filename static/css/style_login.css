@@ -4,7 +4,7 @@ body {
             rgba(0, 0, 0, 0.7), 
             rgba(0, 0, 0, 0.7)
         ),
-        url("{{url_for('static', filename='img/bike_bg.jpg')}}");
+        url("https://raw.githubusercontent.com/oskarkraemer/komootHeatmap/master/static/img/bike_bg.jpg");
 
     background-size: cover;
     background-position: 50% 0;
