@@ -109,22 +109,26 @@ function loadGPX(callback) {
 
     //query the tours data
     var tours = [];
-    let errs = 0;
+    var errs = 0;
 
     for (var i = 0; i < tours_id.length; i++) {
         var request = new XMLHttpRequest();
+        var current_id = tours_id[i]["id"];
+        
         request.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                tours.push(this.responseText);
-            } else {
-                errs++;
-                
-                console.log("Failed to fetch tourID: " + tours_id[i]["id"]);
-                throw new Error("Failed to fetch tourID: " + tours_id[i]["id"] + " | Index: " + i.toString());
+            if (this.readyState == 4) {
+                if(this.status == 200) {
+                    tours.push(this.responseText);
+                } else {
+                    errs++;
+                    
+                    console.log("Failed to fetch tourID: " + current_id);
+                    throw new Error("Failed to fetch tourID: " + current_id + " | Index: " + i.toString());
+                }
             }
         };
 
-        request.open('GET', './tour/' + tours_id[i]["id"], true);
+        request.open('GET', './tour/' + current_id, true);
         request.send(null);
     }
 
