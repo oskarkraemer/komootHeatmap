@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/browser";
+
 var tours_id = [];
 
 const SPORTS = {
