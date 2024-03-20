@@ -99,7 +99,7 @@ function loadGPX(callback) {
         console.log(tours_id);
     } else {
         console.log('Error fetching tours: ' + request.status);
-        throw new Error('Error fetching tours: ' + request.status);
+        Sentry.captureException(new Error('Error fetching tours: ' + request.status));
         
         window.location.replace("./login");
     }
@@ -123,7 +123,7 @@ function loadGPX(callback) {
                     errs++;
                     
                     console.log("Failed to fetch tourID: " + current_id);
-                    throw new Error("Failed to fetch tourID: " + current_id + " | Index: " + i.toString());
+                    Sentry.captureException(new Error("Failed to fetch tourID: " + current_id + " | Index: " + i.toString()));
                 }
             }
         };
@@ -137,6 +137,10 @@ function loadGPX(callback) {
         document.getElementById("gpx_progress").value = tours.length;
 
         if(tours.length == tours_id.length + errs) {
+            if(errs == tours_id.length) {
+                window.location.replace("./login");
+            }
+            
             document.getElementById("progress_box").style.display = "none";
 
             console.log("Loaded all tours.");
