@@ -94,9 +94,13 @@ function loadGPX(callback) {
 
     if (request.status === 200) {
         tours_id = JSON.parse(request.responseText);
+
+        console.log("Successfully fetched tours id. Length: " + tours_id.length.toString());
         console.log(tours_id);
     } else {
-        console.log('Error: ' + request.status);
+        console.log('Error fetching tours: ' + request.status);
+        throw new Error('Error fetching tours: ' + request.status);
+        
         window.location.replace("./login");
     }
 
@@ -105,12 +109,18 @@ function loadGPX(callback) {
 
     //query the tours data
     var tours = [];
+    let errs = 0;
 
     for (var i = 0; i < tours_id.length; i++) {
         var request = new XMLHttpRequest();
         request.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 tours.push(this.responseText);
+            } else {
+                errs++;
+                
+                console.log("Failed to fetch tourID: " + tours_id[i]["id"]);
+                throw new Error("Failed to fetch tourID: " + tours_id[i]["id"] + " | Index: " + i.toString());
             }
         };
 
@@ -122,8 +132,10 @@ function loadGPX(callback) {
     var interval = setInterval(function() {
         document.getElementById("gpx_progress").value = tours.length;
 
-        if(tours.length == tours_id.length) {
+        if(tours.length == tours_id.length + errs) {
             document.getElementById("progress_box").style.display = "none";
+
+            console.log("Loaded all tours.");
 
             clearInterval(interval);
             callback(tours);
@@ -396,8 +408,8 @@ loadGPX(function(tours) {
     Visualizer.options["speed"].thresholds = equalDistribution(0, getSpeedMax(convertedRoutes), 9);
     Visualizer.options["elapsed"].thresholds = equalDistribution(0, getElapsedMax(convertedRoutes), 9);
 
-    console.log(Visualizer.options["speed"].thresholds);
-    console.log(Visualizer.options["elapsed"].thresholds);
+    //console.log(Visualizer.options["speed"].thresholds);
+    //console.log(Visualizer.options["elapsed"].thresholds);
 
     allRoutes = convertedRoutes;
 
