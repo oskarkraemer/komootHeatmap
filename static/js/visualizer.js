@@ -120,6 +120,7 @@ function loadGPX(callback) {
             if (this.readyState == 4) {
                 if(this.status == 200) {
                     tours.push(this.responseText);
+                    console.log("Fetched tour");
                 } else {
                     errs++;
                     
