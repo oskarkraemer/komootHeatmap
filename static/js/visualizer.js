@@ -136,9 +136,10 @@ function loadGPX(callback) {
 
     //wait for all requests to finish
     var interval = setInterval(function() {
-        document.getElementById("gpx_progress").value = tours.length;
+        document.getElementById("gpx_progress").value = tours.length + errs;
+        document.getElementById("progress_label").innerHTML = "Downloading tours (" + (tours.length + errs) + "/" + tours_id.length + "):";
 
-        if(tours.length == tours_id.length + errs) {
+        if(tours.length + errs == tours_id.length) {
             if(errs == tours_id.length) {
                 window.location.replace("./login");
             }
