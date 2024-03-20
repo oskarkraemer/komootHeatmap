@@ -1,5 +1,3 @@
-import * as Sentry from "@sentry/browser";
-
 var tours_id = [];
 
 const SPORTS = {
@@ -101,7 +99,8 @@ function loadGPX(callback) {
         console.log(tours_id);
     } else {
         console.log('Error fetching tours: ' + request.status);
-        Sentry.captureException(new Error('Error fetching tours: ' + request.status));
+
+        window.Sentry && Sentry.captureException(new Error('Error fetching tours: ' + request.status));
         
         window.location.replace("./login");
     }
@@ -125,7 +124,7 @@ function loadGPX(callback) {
                     errs++;
                     
                     console.log("Failed to fetch tourID: " + current_id);
-                    Sentry.captureException(new Error("Failed to fetch tourID: " + current_id + " | Index: " + i.toString()));
+                    window.Sentry && Sentry.captureException(new Error("Failed to fetch tourID: " + current_id + " | Index: " + i.toString()));
                 }
             }
         };
