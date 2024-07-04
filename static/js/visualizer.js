@@ -39,8 +39,10 @@ function getSpeedMax(allRoutes) {
     var sum = 0;
     var count = 0;
     for (var i = Math.floor(speeds.length * 0.94); i < speeds.length; i++) {
-        sum += speeds[i];
-        count++;
+        if(Number.isFinite(speeds[i])){
+            sum += speeds[i];
+            count++;
+        }
     }
 
     return Math.round(sum / count);
