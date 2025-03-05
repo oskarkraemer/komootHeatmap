@@ -45,15 +45,24 @@
                     <button id="speed" onclick="Visualizer.show_polylines(map, allRoutes, 'speed');">Speed</button>
                     <button id="incline" onclick="Visualizer.show_polylines(map, allRoutes, 'incline');">Incline</button>
                     <button id="elapsed" onclick="Visualizer.show_polylines(map, allRoutes, 'elapsed');">Elapsed Time</button>
+                    <button id="year" onclick="Visualizer.show_polylines(map, allRoutes, 'year');">Year</button>
                 </div>
-
-                <label for="line_range">Line width:</label>
-                <input type="range" min="1" max="6" value="4" step="1" class="slider" id="line_range">
+                <div class="slider-container">
+                    <label for="line_range">Line width:</label>
+                    <input type="range" min="1" max="6" value="4" step="1" class="slider" id="line_range">
+                </div>
 
                 <hr>
 
                 <div class='my-legend'>
                     <h3 class='custom-title' id="legend-label">Legend</h3>
+                    <div id="year-slider"  hidden="hidden">
+                        <div class="slider-container">
+                            <label for="start_year">Start year:</label>
+                            <input type="range" min="0" max="0" step="1" class="slider" id="start_year">
+                            <span id="start_year_value"></span>
+                        </div>
+                    </div>
                     <div class='legend-scale'>
                       <ul class='legend-labels'>
                         <li>-<span style='background:#0000FF;'></span></li>

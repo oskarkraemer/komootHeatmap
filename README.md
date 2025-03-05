@@ -121,6 +121,7 @@ It **will not** be stored on any server. If you are still not comfortable with t
 	* ***Speed:*** Gradient from blue to red, indicating the speed at certain points
 	* ***Incline:*** Gradient from blue to red, indicating the incline in percent
 	* ***Elapsed Time:*** Shows how long you have already been on the tour at a certain point
+	* ***Year:*** Shows the year of the tour
 
 
 

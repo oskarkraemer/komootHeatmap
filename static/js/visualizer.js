@@ -70,7 +70,33 @@ function getElapsedMax(allRoutes) {
     return Math.round(times[Math.floor(times.length * 0.94)]);
 }
 
-//Gets euqal distribution
+//Gets latest year from routes
+function getYearMax(allRoutes) {
+  let maxYear = 0;
+  for (let i = 0; i < allRoutes.length; i++) {
+    var points = allRoutes[i];
+    var year = new Date(points[0].time).getFullYear();
+    if (year > maxYear) {
+        maxYear = year;
+    }
+  }
+  return maxYear;
+}
+
+//Gets first year from routes
+function getYearMin(allRoutes) {
+    let minYear = Infinity;
+    for (let i = 0; i < allRoutes.length; i++) {
+        var points = allRoutes[i];
+        var year = new Date(points[0].time).getFullYear();
+        if (year < minYear) {
+            minYear = year;
+        }
+    }
+    return minYear;
+}
+
+//Gets equal distribution
 function equalDistribution(start, end, midpoints) {
     if (midpoints <= 0) {
         return [];
@@ -279,6 +305,29 @@ class Visualizer {
                     {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
                     {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}
                 ]
+            },
+
+            "year": {
+                unit: "y",
+                thresholds: [ ],
+                optionIdxFn: function(latLng, prevLatLng, index, points) {
+                    var i, year,
+                        yearThresholds = Visualizer.options["year"].thresholds;
+
+                    year = new Date(points[0].time).getFullYear()
+
+                    for (i = 0; i < yearThresholds.length; ++i) {
+                        if (year == yearThresholds[i]) {
+                            return i;
+                        }
+                    }
+                    return yearThresholds.length  ;
+                },
+                options: [
+                    {color: '#0000FF'}, {color: '#0040FF'}, {color: '#0080FF'},
+                    {color: '#00FFB0'}, {color: '#00E000'}, {color: '#80FF00'},
+                    {color: '#FFFF00'}, {color: '#FFC000'}, {color: '#FF0000'}, {color: '#444444'}
+                ]
             }
     }
 
@@ -310,6 +359,13 @@ class Visualizer {
             }
             else
                 legend_labels[i].firstChild.data = Visualizer.options[new_vizualisation].thresholds[i];
+        }
+
+        //show year slider
+        if (new_vizualisation === "year") {
+            document.getElementById("year-slider").removeAttribute("hidden");
+        } else {
+            document.getElementById("year-slider").setAttribute("hidden", "hidden");
         }
 
         //update legend label
@@ -395,6 +451,31 @@ class Visualizer {
     }
 }
 
+function initYearSlider(convertedRoutes) {
+    const yearMin = getYearMin(convertedRoutes);
+    const yearMax = getYearMax(convertedRoutes);
+    const startYear = (yearMax - yearMin >= 9 ? yearMax - 8 : yearMin); //if there are more than 9 years tour data, start with the last 9 years
+
+    const slider = document.getElementById("start_year");
+    const valueElement = document.getElementById("start_year_value");
+
+    slider.min = yearMin;
+    slider.max = yearMax;
+    slider.value = startYear;
+    valueElement.textContent = startYear.toString();
+
+    slider.addEventListener("input", () => {
+        valueElement.textContent = slider.value.toString();
+    });
+
+    slider.addEventListener("change", () => {
+        var startYear = parseInt(slider.value);
+        Visualizer.options["year"].thresholds = equalDistribution(startYear - 1, startYear + 9, 9);
+        Visualizer.show_polylines(map, allRoutes, 'year');
+    });
+    slider.dispatchEvent(new Event('change'));
+}
+
 loadGPX(function(tours) {
     //update tours amount label
     document.getElementById("amount-label").innerHTML = tours.length;
@@ -423,6 +504,8 @@ loadGPX(function(tours) {
 
     //console.log(Visualizer.options["speed"].thresholds);
     //console.log(Visualizer.options["elapsed"].thresholds);
+
+    initYearSlider(convertedRoutes);
 
     allRoutes = convertedRoutes;
 
