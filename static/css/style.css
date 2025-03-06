@@ -12,3 +12,11 @@ html, body, #map {
 p {
     font-size: 14px;
 }
+
+.slider-container {
+    display: flex;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    align-items: center; /* center slider and label vertically */
+    height: 100%;
+}
