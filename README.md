@@ -24,8 +24,6 @@
   </p>
 </div>
 
-
-
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -50,47 +48,70 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
+
 <p align="center">🚀 Try the tool: <a href="https://komoot.oskarkraemer.me/" target="_blank">Komoot - Personal Heatmap</a></p>
 <p align="center">📰 Read the story: <a href="https://medium.com/@oskarkraemer/komoot-heatmap-combining-cycling-and-programming-e0a64f6438eb" target="_blank">Komoot Heatmap: Combining Cycling and Programming</a></p>
 
 Welcome to the Komoot - Personal Heatmap! This project aims to provide cyclists with an interactive and informative tool for <b>visualizing their riding experiences</b>. This program <b>generates heatmaps</b> that showcase all cycling routes over time, allowing users to <b>explore and visualize</b> their <b>popular paths and hotspots</b>.
 <br>
 
-
 ![Image showing the incline-visualisation](https://github.com/oskarkraemer/komootHeatmap/blob/master/docs/demo_incline.png?raw=true)
 ![Image showing the heatmap-visualisation](https://github.com/oskarkraemer/komootHeatmap/blob/master/docs/demo_heatmap.png?raw=true)
 
-
-
 ### Built With
+
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
-  
+
 ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white)
 
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 
-
-
-
 <!-- GETTING STARTED -->
+
 ## Getting Started
 
 To get a local copy up and running follow these simple steps.
 
 ### Prerequisites
 
-* Docker (x86 / x64)
+- Docker (x86 / x64)
 
 ### Installation
 
-***NOTE***: Sadly, Komoot does not give independent and small developers access to their API. Therefore, I rely on a community-made solution. (Thank you @matiyau for [komPYoot](https://github.com/matiyau/komPYoot))
-This however, ***does not support OAuth2*** and only allows verification through email and password. I am ***not*** interested in your data and ***will not*** use it for any other purposes than to authenticate you.
+**_NOTE_**: Sadly, Komoot does not give independent and small developers access to their API. Therefore, I rely on a community-made solution. (Thank you @matiyau for [komPYoot](https://github.com/matiyau/komPYoot))
+This however, **_does not support OAuth2_** and only allows verification through email and password. I am **_not_** interested in your data and **_will not_** use it for any other purposes than to authenticate you.
 It **will not** be stored on any server. If you are still not comfortable with this, feel free to host the project yourself.
 
+## Docker-compose (recommended)
+
+1. Use the following `docker-compose.yml` (you can also find it at the root of this repository):
+
+   ```yaml
+   services:
+     heatmap:
+       container_name: komoot-heatmap
+       image: oskarkraemer/komoot-heatmap:latest
+       restart: unless-stopped
+       volumes:
+         - komoot-heatmap:/app/db-data
+       ports:
+         - "5001:80"
+   volumes:
+     komoot-heatmap:
+   ```
+
+2. Run:
+
+   ```sh
+   docker compose up -d
+   ```
+
+3. Access **http://localhost:5001** through an internet browser.
+
+## Build Docker image
 
 1. Clone the repo
    ```sh
@@ -102,43 +123,39 @@ It **will not** be stored on any server. If you are still not comfortable with t
    ```
 3. Create Docker container and run
    ```sh
-	docker run -p 80:80 komoot-heatmap:latest
+   docker run -p 80:80 komoot-heatmap:latest
    ```
 4. Access http://localhost:80 through an internet browser
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- USAGE EXAMPLES -->
-## Usage
 
+## Usage
 
 1. **Log in** with your credentials at http://localhost:80.
 
-2. You may choose from ***4*** different visualizations:
-	* ***Heatmap:*** Displays routes in an opaque red shade, allowing you to see the most used paths
-	* ***Speed:*** Gradient from blue to red, indicating the speed at certain points
-	* ***Incline:*** Gradient from blue to red, indicating the incline in percent
-	* ***Elapsed Time:*** Shows how long you have already been on the tour at a certain point
-	* ***Year:*** Shows the year of the tour
-
-
+2. You may choose from **_4_** different visualizations:
+   - **_Heatmap:_** Displays routes in an opaque red shade, allowing you to see the most used paths
+   - **_Speed:_** Gradient from blue to red, indicating the speed at certain points
+   - **_Incline:_** Gradient from blue to red, indicating the incline in percent
+   - **_Elapsed Time:_** Shows how long you have already been on the tour at a certain point
+   - **_Year:_** Shows the year of the tour
 
 <!-- ROADMAP -->
+
 ## Roadmap
 
 - ~~Get access to Komoot's official API and OAuth2~~
-- [x] Offer a ***hosted solution*** for easy access [[Visit hosted version](https://komoot.oskarkraemer.me/)]
+- [x] Offer a **_hosted solution_** for easy access [[Visit hosted version](https://komoot.oskarkraemer.me/)]
 - [ ] Social features
-    - [ ] Sharing your heatmap with friends
-    - [ ] Comparing your heatmap with other people
+  - [ ] Sharing your heatmap with friends
+  - [ ] Comparing your heatmap with other people
 
 See the [open issues](https://github.com/oskarkraemer/komootHeatmap/issues) for a full list of proposed features (and known issues).
 
-
-
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -152,8 +169,8 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-
 <!-- CONTACT -->
+
 ## Contact
 
 Oskar Krämer - 05262020@protonmail.com
