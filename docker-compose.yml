@@ -1,0 +1,11 @@
+services:
+  heatmap:
+    container_name: komoot-heatmap
+    image: oskarkraemer/komoot-heatmap:latest
+    restart: unless-stopped
+    volumes:
+      - komoot-heatmap:/app/db-data
+    ports:
+      - "5001:80"
+volumes:
+  komoot-heatmap:
