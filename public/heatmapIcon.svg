@@ -1,0 +1,17 @@
+<svg
+    width="22"
+    height="22"
+    viewBox="0 0 22 22"
+    fill="none"
+    className="shrink-0"
+>
+    <circle cx="11" cy="11" r="11" fill="#ff5722" />
+    <path
+        d="M5 15 L8 7 L11 12.5 L14 7 L17 15"
+        stroke="white"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+    />
+</svg>
