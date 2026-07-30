@@ -7,7 +7,10 @@
     <img src="https://github.com/oskarkraemer/komootHeatmap/blob/master/docs/heatmap-icon.png?raw=true" alt="Logo" width="160" height="160">
   </a>
 
-<h3 align="center">Komoot - Personal Heatmap</h3>
+<h3 align="center">Komoot - Personal Heatmap v2</h3>
+<p align="center">
+  <i>This is the new, rewritten version. You can find the old version under <a href="https://github.com/oskarkraemer/komootHeatmap-legacy">komootHeatmap-legacy</a></i>
+</p>
 
   <p align="center">
     Quickly map <b>all the places</b> you have been on one map.
