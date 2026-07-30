@@ -103,7 +103,7 @@ export default function KomootHeatmapLanding() {
               Open Heatmap
             </a>
             <a
-              href="https://github.com/oskarkraemer/komoot-heatmap"
+              href="https://github.com/oskarkraemer/komootHeatmap"
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-card text-[#dde3ec] text-sm font-medium border border-border hover:bg-[#0e1219] hover:border-[#2e3748] transition-colors"
@@ -317,7 +317,7 @@ export default function KomootHeatmapLanding() {
         </div>
         <div className="flex gap-5">
           <a
-            href="https://github.com/oskarkraemer/komoot-heatmap"
+            href="https://github.com/oskarkraemer/komootHeatmap"
             target="_blank"
             rel="noreferrer"
             className="hover:text-[#dde3ec] transition-colors"
