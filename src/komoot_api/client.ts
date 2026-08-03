@@ -16,6 +16,11 @@ const LOGIN_URL = "https://api.komoot.de/v006/account/email/%s/";
 const TOURS_URL = "https://api.komoot.de/v007/users/%s/tours/";
 const DL_GPX_URL = "https://api.komoot.de/v007/tours/%s.gpx";
 
+function toBase64Utf8(str: string): string {
+  const bytes = new TextEncoder().encode(str);
+  return btoa(String.fromCharCode(...bytes));
+}
+
 export async function login(
   email: string,
   password: string,
@@ -26,7 +31,7 @@ export async function login(
   try {
     resp = await fetch(url, {
       headers: {
-        Authorization: "Basic " + btoa(`${email}:${password}`),
+        Authorization: "Basic " + toBase64Utf8(`${email}:${password}`),
         "Content-Type": "application/json",
       },
     });
