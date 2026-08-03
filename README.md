@@ -9,7 +9,7 @@
 
 <h3 align="center">Komoot - Personal Heatmap v2</h3>
 <p align="center">
-  <i>This is the new, rewritten version. You can find the old version under <a href="https://github.com/oskarkraemer/komootHeatmap-legacy">komootHeatmap-legacy</a></i>
+  <i>This is the new, rewritten version. You can find the old version under <a href="https://github.com/oskarkraemer/komootHeatmap/tree/e411f02e214977f59b39aa1ab403405e2a4d5c1b">komootHeatmap-legacy</a></i>
 </p>
 
   <p align="center">
