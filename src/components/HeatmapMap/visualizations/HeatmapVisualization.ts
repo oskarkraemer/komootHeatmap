@@ -25,7 +25,7 @@ export class HeatmapVisualization extends BaseVisualization {
   }
 
   getOpacity(): number {
-    return 0.55;
+    return 0.53;
   }
 
   // Override render for heatmap visualization to use opacity and a single polyline

@@ -11,7 +11,7 @@ export class DarkLayer extends BaseLayer {
     const style = document.createElement("style");
     style.innerHTML = `
       .dark-tiles {
-        filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+        filter: invert(100%) hue-rotate(180deg) brightness(45%) contrast(90%);
       }
     `;
     document.head.appendChild(style);
