@@ -7,6 +7,8 @@ import { BaseVisualization } from "./visualizations/BaseVisualization";
 import { HeatmapMap } from ".";
 import { BaseLayer } from "./layers/BaseLayer";
 import { KomootSportOrAll } from "@/components/app-sidebar";
+import { StreamEvent } from "@/src/app/api/routes/batch/route";
+import { Progress } from "@/components/ui/progress";
 
 interface HeatmapProps {
   tourIds: string[];
@@ -37,6 +39,7 @@ export default function Heatmap({
   const [status, setStatus] = useState<"loading" | "syncing" | "ready">(
     "loading",
   );
+  const [syncProgress, setSyncProgress] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -44,6 +47,7 @@ export default function Heatmap({
     async function loadRoutes() {
       setStatus("loading");
       setRoutes([]);
+      setSyncProgress(null);
 
       // 1. Check IndexedDB
       const { cached, missingIds } = await getCachedRoutes(tourIds);
@@ -54,7 +58,7 @@ export default function Heatmap({
       setStatus(missingIds.length > 0 ? "syncing" : "ready");
       if (missingIds.length === 0) return;
 
-      // 3. Fetch only missing from backend
+      // 3. Stream missing routes from backend
       let resp: Response;
       try {
         resp = await fetch("/api/routes/batch", {
@@ -70,23 +74,54 @@ export default function Heatmap({
 
       if (cancelled) return;
 
-      if (!resp.ok) {
+      if (!resp.ok || !resp.body) {
         console.error("Batch fetch failed:", resp.status);
         setStatus("ready");
         return;
       }
 
-      const { routes: newRoutes }: { routes: EnrichedRoute[] } =
-        await resp.json();
-      if (cancelled) return;
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
 
-      // 4. Save to IndexedDB
-      await saveRoutes(newRoutes);
-      if (cancelled) return;
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (cancelled) {
+            reader.cancel();
+            return;
+          }
 
-      // 5. Add to map
-      setRoutes((prev) => [...prev, ...newRoutes]);
-      setStatus("ready");
+          buffer += decoder.decode(value, { stream: true });
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() ?? "";
+
+          for (const part of parts) {
+            if (!part.startsWith("data: ")) continue;
+            const event: StreamEvent = JSON.parse(part.slice(6));
+
+            if (event.type === "started") {
+              setSyncProgress(null);
+            } else if (event.type === "progress") {
+              setSyncProgress(event.progress);
+            } else if (event.type === "error") {
+              console.error("Stream error:", event.message);
+            } else if (event.type === "done") {
+              if (!cancelled) {
+                const routes = event.results;
+                setRoutes((prev) => [...prev, ...routes]);
+                await saveRoutes(routes);
+              }
+            }
+          }
+        }
+      } finally {
+        if (!cancelled) {
+          setSyncProgress(null);
+          setStatus("ready");
+        }
+      }
     }
 
     loadRoutes();
@@ -99,7 +134,15 @@ export default function Heatmap({
   return (
     <div>
       {status === "loading" && <p>Loading routes...</p>}
-      {status === "syncing" && <p>Syncing new routes...</p>}
+      {status === "syncing" && (
+        <div>
+          <p>
+            Syncing new routes...
+            {syncProgress && ` ${syncProgress}%`}
+          </p>
+          <Progress value={syncProgress ? syncProgress : null} />
+        </div>
+      )}
       <HeatmapMap
         routes={filteredRoutes}
         visualization={visualization}
