@@ -7,14 +7,23 @@ export class DarkLayer extends BaseLayer {
     preview: "#1a1a2e",
   };
 
+  addStyles() {
+    const style = document.createElement("style");
+    style.innerHTML = `
+      .dark-tiles {
+        filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   createTileLayer() {
     const L = require("leaflet") as typeof import("leaflet");
-    return L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-      {
-        attribution: "© OpenStreetMap © CARTO",
-        maxZoom: 19,
-      },
-    );
+    this.addStyles();
+    return L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap",
+      maxZoom: 19,
+      className: "dark-tiles",
+    });
   }
 }

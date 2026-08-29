@@ -100,10 +100,10 @@ export default function HeatmapMap({
     });
 
     L.control.zoom({ position: "topright" }).addTo(map);
-    L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-      { attribution: "© OpenStreetMap © CARTO", maxZoom: 19 },
-    ).addTo(map);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap",
+      maxZoom: 19,
+    }).addTo(map);
 
     layerGroupRef.current = L.layerGroup().addTo(map);
     mapRef.current = map;
